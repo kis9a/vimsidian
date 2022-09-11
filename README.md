@@ -2,7 +2,7 @@
 
 Vim script to help edit obsidian notes in Vim. Highlight, Complement, Searching and open links and tags.
 
-![](./image.png)
+![](./docs/image.png)
 
 ## Required
 
@@ -14,11 +14,11 @@ Vim script to help edit obsidian notes in Vim. Highlight, Complement, Searching 
 
 ### Syntax Highlight
 
-- link `/\v\[\[.{-}\]\]/`
+- link `\v\[\[.{-}\]\]`
 - link media `\v\!\[\[.{-}\]\]`
 - link heading `\v\[\[#.{-}\]\]`
 - link block `\v\[\[#.{-}\]\]`
-- tag `/\v\#(\w+)/`
+- tag `\v\#(\w+)`
 
 ### Functions
 
@@ -42,6 +42,10 @@ Vim script to help edit obsidian notes in Vim. Highlight, Complement, Searching 
 
   Search `$obsidian_path` for list of notes linking this note and display it in the quickfix list.
 
-- ObsidianMoveToLink
+- ObsidianMoveToLink()
 
   Search `$obsidian_path` for the link you are cursor on and move it.
+
+- ObsidianFormatLink()
+
+  Format obsidian link string for the current file. See pattern [test_obsidian_format_link](./docs/test_obsidian_format_link).

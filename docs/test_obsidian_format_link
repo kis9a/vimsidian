@@ -1,0 +1,36 @@
+1. `\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<![[` : lookbehind `[[` negative `(pattern)` to ` [[    `
+
+a[[b]]
+a,[[b]]
+
+[[b]]
+([[b]]
+、[[b]]
+。[[b]]
+
+2. `\v]](\s|\n|$|\.|\,|\)|[\u3001]|[\u3002])@!` : lookahead `]]` negative `(pattern)` to `]] `
+
+[[a]]is
+
+[[a]],
+[[a]]。
+[[a]]
+
+3. `\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<!\s+[[` : lookbehind `\s+[[` negative `(pattern)` to ` [[`
+
+         [[a]]
+b         [[a]]
+
+4. `\v(\!|\(|[\u3001]|[\u3002])@<=\s+[[` lookbehind `\s+[[` positive `(pattern)` to `]]`
+
+。               [[a]]
+、         [[a]]
+
+5. `\v]]\s+(\s|\n|$|\.|\,|\)|[\u3001]|[\u3002])@!` : lookahead `]]\s+` negative `(pattern)` to `]] `
+
+[[a]]            is
+
+6. `\v]]\s+(\n|$|\.|\,|\)|[\u3001]|[\u3002])@=` : lookahead `]]\s+` negative `(pattern)` to `]]`
+
+[[a]]        。
+[[a]]    、

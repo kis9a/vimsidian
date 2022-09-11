@@ -208,6 +208,23 @@ endfunction
 command! ObsidianMoveToLink call <SID>ObsidianMoveToLink()
 autocmd BufNewFile,BufReadPost ~/obsidian/*.md nnoremap <silent> sF :ObsidianMoveToLink<CR>
 
+" obsidian format link: Format obsidian link string for the current file
+function! s:ObsidianFormatLink()
+  let file = expand("%:p")
+  let s = join(readfile(file), "\n")
+  let s = substitute(s, '\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<![[', ' [[', 'g')
+  let s = substitute(s, '\v]](\s|\n|$|\.|\,|\)|[\u3001]|[\u3002])@!', ']] ', 'g')
+  let s = substitute(s, '\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<!\s+[[', ' [[', 'g')
+  let s = substitute(s, '\v(\!|\(|[\u3001]|[\u3002])@<=\s+[[', '[[', 'g')
+  let s = substitute(s, '\v]]\s+(\s|\n|$|\.|\,|\)|[\u3001]|[\u3002])@!', ']] ', 'g')
+  let s = substitute(s, '\v]]\s+(\n|$|\.|\,|\)|[\u3001]|[\u3002])@=', ']]', 'g')
+  call writefile(split(s, '\n'), file, "b")
+  execute 'e!'
+endfunction
+
+command! ObsidianFormatLink call <SID>ObsidianFormatLink()
+autocmd BufNewFile,BufReadPost ~/obsidian/*.md nnoremap <silent> si :ObsidianFormatLink<CR>
+
  " helper functions
 function! s:prevCursorChar(n)
   let chars = split(getline('.')[0 : col('.')-1], '\zs')
