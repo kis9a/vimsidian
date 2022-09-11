@@ -55,7 +55,7 @@ autocmd BufNewFile,BufReadPost ~/obsidian/*.md setlocal completefunc=CompleteObs
 
 " obsidian rg notes with matches: Notes containing the argument word
 function! s:ObsidianRgNotesWithMatches(word) abort
-  let cmd = 'cd ' . g:obsidian_path . "; rg -n %s --files-with-matches" . "| awk '" . '{ print $0 ":1: " }' . "'"
+  let cmd = 'cd ' . g:obsidian_path . "; rg -F -n %s --files-with-matches" . "| awk '" . '{ print $0 ":1: " }' . "'"
   let obsidian_rg_notes_with_matches = system(printf(cmd, a:word))
   if empty (obsidian_rg_notes_with_matches)
     echo "Not found '" .a:word . "'"
@@ -64,8 +64,8 @@ function! s:ObsidianRgNotesWithMatches(word) abort
   endif
 endfunction
 
-command! -nargs=1 ObsidianRgFilesWithMatches call <SID>ObsidianRgFilesWithMatches(<q-args>)
-autocmd BufNewFile,BufReadPost ~/obsidian/*.md nnoremap <silent> sr :ObsidianRgFilesWithMatches 
+command! -nargs=1 ObsidianRgNotesWithMatches call <SID>ObsidianRgNotesWithMatches(<q-args>)
+autocmd BufNewFile,BufReadPost ~/obsidian/*.md nnoremap <silent> sr :ObsidianRgNotesWithMatches 
 
 " obsidian rg tag matches: Search `$obsidian_path` for matches containing the under cursor tag name
 function! s:ObsidianRgTagMatches() abort
@@ -126,9 +126,9 @@ function! s:ObsidianRgNotesLinkingThisNote() abort
   let fname = fnamemodify(expand("%:t"), ":r")
   let ext = expand("%:e")
   if ext == "md"
-    let a=s:ObsidianRgNotesWithMatches("'\\[\\[" . fname . "\\]]'")
+    let a=s:ObsidianRgNotesWithMatches("'\[\[" . fname . "\]]'")
   else
-    let a=s:ObsidianRgNotesWithMatches("'\\[\\[" . expand("%t") . "\\]]'")
+    let a=s:ObsidianRgNotesWithMatches("'\[\[" . expand("%t") . "\]]'")
   endif
 endfunction
 
