@@ -55,27 +55,37 @@ autocmd BufNewFile,BufReadPost ~/obsidian/*.md setlocal completefunc=CompleteObs
 
 " obsidian rg notes with matches: Notes containing the argument word
 function! s:ObsidianRgNotesWithMatches(word) abort
-  let cmd = 'cd ' . g:obsidian_path . "; rg -F -n %s --files-with-matches" . "| awk '" . '{ print $0 ":1: " }' . "'"
+  let cmd = 'rg -F -n %s --files-with-matches $(realpath ' . g:obsidian_path . ") | awk '" . '{ print $0 ":1: " }' . "'"
   let obsidian_rg_notes_with_matches = system(printf(cmd, a:word))
   if empty (obsidian_rg_notes_with_matches)
     echo "Not found '" .a:word . "'"
   else
+    execute 'lcd' g:obsidian_path
     cexpr obsidian_rg_notes_with_matches | copen
   endif
 endfunction
 
 command! -nargs=1 ObsidianRgNotesWithMatches call <SID>ObsidianRgNotesWithMatches(<q-args>)
-autocmd BufNewFile,BufReadPost ~/obsidian/*.md nnoremap <silent> sr :ObsidianRgNotesWithMatches 
+
+" obsidian rg notes with matches interactive: Notes containing the word input
+function! s:ObsidianRgNotesWithMatchesInteractive() abort
+  let i = s:getUserInput("")
+  call s:ObsidianRgNotesWithMatches(i)
+endfunction
+
+command! ObsidianRgNotesWithMatchesInteractive call <SID>ObsidianRgNotesWithMatchesInteractive()
+autocmd BufNewFile,BufReadPost ~/obsidian/*.md nnoremap <silent> sr :ObsidianRgNotesWithMatchesInteractive<CR>
 
 " obsidian rg tag matches: Search `$obsidian_path` for matches containing the under cursor tag name
 function! s:ObsidianRgTagMatches() abort
   let cword = expand('<cWORD>')
   if cword[0] == "#"
-    let cmd = "cd " . g:obsidian_path . "; rg -n '" . cword . "'"
+    let cmd = "rg -n '" . cword . "' $(realpath " . g:obsidian_path . ")"
     let obsidian_rg_tag_matches = system(cmd)
     if empty (obsidian_rg_tag_matches)
       echo "Not found '" . cword . "'"
     else
+      execute 'lcd' g:obsidian_path
       cexpr obsidian_rg_tag_matches | copen
     endif
   else
@@ -108,12 +118,13 @@ function! s:ObsidianFdLinkedNotesByThisNote() abort
     endfor
   endif
 
-  let fdCmd = 'cd ' . g:obsidian_path . '; fd | grep ' . fdGrepArg . "| awk '" . '{ print $0 ":1: " }' . "'"
+  let fdCmd = 'fd . ' . g:obsidian_path . ' | grep ' . fdGrepArg . "| awk '" . '{ print $0 ":1: " }' . "'"
   let obsidian_fd_linked_notes_by_this_note = system(fdCmd)
   if empty(obsidian_fd_linked_notes_by_this_note)
     echo "Not found linking notes'"
     return
   else
+    execute 'lcd' g:obsidian_path
     cexpr obsidian_fd_linked_notes_by_this_note | copen
   endif
 endfunction
@@ -195,7 +206,7 @@ function! s:ObsidianMoveToLink() abort
     endif
   endif
 
-  let cmd = 'cd ' . g:obsidian_path . "; fd | grep '" . f . '.md' . "' | head -n 1"
+  let cmd = "fd . " . g:obsidian_path . " | grep '" . f . '.md' . "' | head -n 1"
   let note = system(cmd)
   if empty(note)
     echo "Not found linking note " . f . '.md'
@@ -226,6 +237,17 @@ command! ObsidianFormatLink call <SID>ObsidianFormatLink()
 autocmd BufNewFile,BufReadPost ~/obsidian/*.md nnoremap <silent> si :ObsidianFormatLink<CR>
 
  " helper functions
+function! s:getUserInput(label)
+  let curline = getline('.')
+  echohl Question
+  call inputsave()
+  let input=input(a:label . " > ")
+  echohl NONE
+  call inputrestore()
+  call setline('.', curline)
+  return input
+endfunction
+
 function! s:prevCursorChar(n)
   let chars = split(getline('.')[0 : col('.')-1], '\zs')
   let len = len(chars)

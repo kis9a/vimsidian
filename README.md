@@ -1,14 +1,15 @@
-# ObsidianWithVimScripts
+# vimsidian
 
 Vim script to help edit obsidian notes in Vim. Highlight, Complement, Searching and open links and tags.
 
-![](./docs/image.png)
+![](./docs/image.gif)
 
 ## Required
 
-- Customize obsidian path variables, highlight color, mappings for you.
+- `realpath` command
 - <https://github.com/BurntSushi/ripgrep>
 - <https://github.com/sharkdp/fd>
+- Customize obsidian path variables, highlight color, mappings for you.
 
 ## Source
 
