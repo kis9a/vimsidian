@@ -51,7 +51,7 @@ function! CompleteObsidianFiles(findstart, base)
   endif
 endfunction
 
-autocmd BufNewFile,BufReadPost ~/obsidian/*.md setlocal completefunc=CompleteObsidianFiles
+autocmd B
 
 " obsidian rg notes with matches: Notes containing the argument word
 function! s:ObsidianRgNotesWithMatches(word) abort
