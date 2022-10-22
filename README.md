@@ -36,6 +36,7 @@ autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> st :Vimsidi
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sl :VimsidianFdLinkedNotesByThisNote<CR>
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sg :VimsidianRgNotesLinkingThisNote<CR>
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sF :VimsidianMoveToLink<CR>
+autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> si :VimsidianFormatLink<CR>
 ```
 
 ## Descriptions
