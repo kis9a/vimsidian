@@ -14,6 +14,8 @@ command! VimsidianRgTagMatches call vimsidian#VimsidianRgTagMatches()
 command! VimsidianFdLinkedNotesByThisNote call vimsidian#VimsidianFdLinkedNotesByThisNote()
 command! VimsidianMoveToLink call vimsidian#VimsidianMoveToLink()
 command! VimsidianFormatLink call vimsidian#VimsidianFormatLink()
+command! VimsidianMoveToNextLink call vimsidian#VimsidianMoveToNextLink()
+command! VimsidianMoveToPreviousLink call vimsidian#VimsidianMoveToPreviousLink()
 
 " sets
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md setlocal completefunc=vimsidian#CompleteVimsidianFiles

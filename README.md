@@ -6,7 +6,7 @@ Vim plugin to help edit obsidian notes in Vim. Highlight, Complement, Searching 
 
 ## Required
 
-- $OBSIDIAN_PATH environment variable
+- `$OBSIDIAN_PATH` environment variable
 - [realpath](https://github.com/coreutils/coreutils) command
 - [ripgrep](https://github.com/BurntSushi/ripgrep) command
 - [fd](https://github.com/sharkdp/fd) command
@@ -17,7 +17,7 @@ Vim plugin to help edit obsidian notes in Vim. Highlight, Complement, Searching 
 Plug 'kis9a/vimsidian'
 ```
 
-## Examples mappings
+## Mapping Examples
 
 ```
 let g:vimsidian_path=$OBSIDIAN_PATH
@@ -36,6 +36,8 @@ autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> st :Vimsidi
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sl :VimsidianFdLinkedNotesByThisNote<CR>
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sg :VimsidianRgNotesLinkingThisNote<CR>
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sF :VimsidianMoveToLink<CR>
+autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sk :VimsidianMoveToPreviousLink<CR>
+autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> sj :VimsidianMoveToNextLink<CR>
 autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> si :VimsidianFormatLink<CR>
 ```
 
@@ -74,6 +76,14 @@ autocmd BufNewFile,BufReadPost $OBSIDIAN_PATH/*.md nnoremap <silent> si :Vimsidi
 - VimsidianMoveToLink()
 
   Search `$vimsidian_path` for the link you are cursor on and move it.
+
+- VimsidianMoveToPreviousLink()
+
+  Go to link before current cursor.
+
+- VimsidianMoveToNextLink()
+
+  Go to link after current cursor position.
 
 - VimsidianFormatLink()
 

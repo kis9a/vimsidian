@@ -37,7 +37,7 @@ function! vimsidian#VimsidianRgNotesWithMatches(word)
 endfunction
 
 function! vimsidian#VimsidianRgNotesWithMatchesInteractive()
-  let i = s:getUserInput("")
+  let i = vimsidian#utils#getUserInput("")
   call vimsidian#VimsidianRgNotesWithMatches(i)
 endfunction
 
@@ -100,14 +100,14 @@ function! vimsidian#VimsidianRgNotesLinkingThisNote()
 endfunction
 
 function! vimsidian#VimsidianMoveToLink()
-  let cc = s:currentCursorChar()
-  let p = s:prevCursorChar(1)
-  let n = s:nextCursorChar(1)
-  let c = s:charToCol()
+  let cc = vimsidian#utils#currentCursorChar()
+  let p = vimsidian#utils#prevCursorChar(1)
+  let n = vimsidian#utils#nextCursorChar(1)
+  let c = vimsidian#utils#charToCol()
   let cs = split(c, '\zs')
   let cl = len(cs)
-  let l = s:lineChar()
-  let ll = s:charLen(l)
+  let l = vimsidian#utils#lineChar()
+  let ll = vimsidian#utils#charLen(l)
   let f = ''
 
   if cc ==# '['
@@ -117,7 +117,7 @@ function! vimsidian#VimsidianMoveToLink()
       let r = '\v(^.{' . cl . '})@<=.{-}]]'
       let m = matchstr(l, r)
       if m !=# ''
-        let f .= s:removeVimsidianLinkToken(m)
+        let f .= vimsidian#utils#removeVimsidianLinkToken(m)
       else
         echo 'No match link token ]]'
         return
@@ -127,22 +127,22 @@ function! vimsidian#VimsidianMoveToLink()
     if p !=# ']' && n !=# ']'
       return
     else
-      let cr = s:reverseString(c)
+      let cr = vimsidian#utils#reverseString(c)
       let r = '\v^.{-}[['
       let m = matchstr(cr, r)
       if m !=# ''
-        let f .= s:removeVimsidianLinkToken(s:reverseString(m))
+        let f .= vimsidian#utils#removeVimsidianLinkToken(vimsidian#utils#reverseString(m))
       else
         echo 'No match link token [['
         return
       endif
     endif
   else
-    let cr = s:reverseString(c)
+    let cr = vimsidian#utils#reverseString(c)
     let r = '\v^.{-}[['
     let m = matchstr(cr, r)
     if m !=# ''
-      let f .= s:removeVimsidianLinkToken(s:reverseString(m))
+      let f .= vimsidian#utils#removeVimsidianLinkToken(vimsidian#utils#reverseString(m))
     else
       echo 'No match link token [['
       return
@@ -151,7 +151,7 @@ function! vimsidian#VimsidianMoveToLink()
     let r = '\v(^.{' . cl . '})@<=.{-}]]'
     let m = matchstr(l, r)
     if m !=# ''
-      let f .= s:removeVimsidianLinkToken(m)
+      let f .= vimsidian#utils#removeVimsidianLinkToken(m)
     else
       echo 'No match link token ]]'
       return
@@ -168,6 +168,122 @@ function! vimsidian#VimsidianMoveToLink()
   endif
 endfunction
 
+function! vimsidian#VimsidianMoveToPreviousLink()
+  let cc = vimsidian#utils#currentCursorChar()
+  let c = vimsidian#utils#charToCol()
+  let cs = split(c, '\zs')
+  let cl = len(cs)
+  let l = vimsidian#utils#lineChar()
+  let ll = vimsidian#utils#charLen(l)
+  let cln = line('.')
+
+  let m = matchstr(vimsidian#utils#reverseString(c), '\v^.{-}]]')
+  if m !=# ''
+    let ml = len(split(m, '\zs'))
+    let mp = matchstr(vimsidian#utils#reverseString(c), '\v^.{'. ml . '}.{-}[[')
+    if ml !=# ''
+      call cursor(cln, (len(c) - len(mp) + 1))
+      return
+    else
+    endif
+  else
+    let lnums = [] | silent! g/\[\[.\{-}]]/call add(lnums, line('.'))
+    let lnums = reverse(sort(lnums, 'n'))
+    if empty(lnums)
+      echo 'Not found previous link'
+      return
+    else
+      for lnum in lnums
+        if lnum < cln
+          let nl = getline(lnum)
+          let nlm = matchstr(nl, '\v^.*[[')
+          if nlm !=# ''
+            call cursor(lnum, (len(nlm) - 1))
+            return
+          else
+            call cursor(lnum, 1)
+            return
+          endif
+        endif
+      endfor
+
+      let nln = lnums[0]
+      let nl = getline(nln)
+      let nlm = matchstr(nl, '\v^.*[[')
+      if nlm !=# ''
+        call cursor(nln, len(nlm) - 1)
+        return
+      else
+        call cursor(nln, 1)
+        return
+      endif
+    endif
+  endif
+endfunction
+
+function! vimsidian#VimsidianMoveToNextLink()
+  let cc = vimsidian#utils#currentCursorChar()
+  let c = vimsidian#utils#charToCol()
+  let cs = split(c, '\zs')
+  let cl = len(cs)
+  let l = vimsidian#utils#lineChar()
+  let ll = vimsidian#utils#charLen(l)
+  let cln = line('.')
+
+  let m = matchstr(l, '\v(^.{' . cl . '})@<=.{-}[[')
+  if m !=# ''
+    let ms = split(m, '\zs')
+    let ml = len(ms)
+    if matchstr(l, '\v(^.{' . (cl + ml) . '})@<=.{-}]]') !=# ''
+      call cursor(cln, (len(c) + len(m) - 1))
+      return
+    endif
+  else
+    let lnums = [] | silent! g/\[\[.\{-}]]/call add(lnums, line('.'))
+    let lnums = sort(lnums, 'n')
+    if empty(lnums)
+      echo 'Not found next link'
+      return
+    else
+      for lnum in lnums
+        if lnum > cln
+          let nl = getline(lnum)
+          if matchstr(nl, '\v^[[') !=# ''
+            call cursor(lnum, 1)
+            return
+          else
+            let nlm = matchstr(nl, '\v^.{-}[[')
+            if nlm !=# ''
+              call cursor(lnum, len(nlm) - 1)
+              return
+            else
+              call cursor(lnum, 1)
+              return
+            endif
+          endif
+          return
+        endif
+      endfor
+
+      let nln = lnums[0]
+      let nl = getline(nln)
+      if matchstr(nl, '\v^[[') !=# ''
+        call cursor(nln, 1)
+        return
+      else
+        let nlm = matchstr(nl, '\v^.{-}[[')
+        if nlm !=# ''
+          call cursor(nln, len(nlm) - 1)
+          return
+        else
+          call cursor(nln, 1)
+          return
+        endif
+      endif
+    endif
+  endif
+endfunction
+
 function! vimsidian#VimsidianFormatLink()
   let file = expand("%:p")
   let s = join(readfile(file), "\n")
@@ -181,64 +297,5 @@ function! vimsidian#VimsidianFormatLink()
   execute 'e!'
 endfunction
 
- " helper functions
-function! s:getUserInput(label)
-  let curline = getline('.')
-  echohl VimsidianPromptColor
-  call inputsave()
-  let input=input(a:label . " > ")
-  echohl NONE
-  call inputrestore()
-  call setline('.', curline)
-  return input
-endfunction
-
-function! s:prevCursorChar(n)
-  let chars = split(getline('.')[0 : col('.')-1], '\zs')
-  let len = len(chars)
-  if a:n >= len
-    return ''
-  else
-    return chars[len(chars) - a:n - 1]
-  endif
-endfunction
-
-function! s:nextCursorChar(n)
-  return matchstr(getline('.'), '.', col('.')-1, a:n + 1)
-endfunction
-
-function! s:charToCol()
-  if strlen(s:charCol()) ==# 3
-    return getline('.')[0 : col('.')+1]
-  else
-    return getline('.')[0 : col('.')-1]
-  endif
-endfunction
-
-function! s:charCol()
-  return matchstr(getline('.'), '.', col('.')-1)
-endfunction
-
-function! s:charLen(b)
-  return len(split(a:b, '\zs'))
-endfunction
-
-function! s:lineChar()
-  return getline('.')[0 : len(getline('.'))]
-endfunction
-
-function! s:currentCursorChar()
-  return matchstr(getline('.'), '.', col('.')-1)
-endfunction
-
-function! s:reverseString(str)
-  return join(reverse(split(a:str, '\zs')), '')
-endfunction
-
-function! s:removeVimsidianLinkToken(str)
-  return substitute(a:str, '\v([|\])', '', 'g')
-endfunction
-
 " end flags
 let &cpo = s:save_cpo
-let loaded_vimsidian_plugin = 1
