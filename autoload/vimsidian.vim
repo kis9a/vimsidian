@@ -158,7 +158,44 @@ function! vimsidian#VimsidianMoveToLink()
     endif
   endif
 
-  let cmd = "fd . " . g:vimsidian_path . " | grep '/" . f . '.md' . "' | head -n 1"
+  if stridx(f, '|') !=# "-1"
+    let f = split(f, "|")[0]
+  endif
+
+  if stridx(f, '#') !=# "-1"
+    if f[0] ==# '#'
+      echo 'Not supported In-note link'
+      return
+    endif
+    let f = split(f, "#")[0]
+  endif
+
+  if stridx(f, '^') !=# "-1"
+    if f[0] ==# '^'
+      echo 'Not supported In-note link'
+      return
+    endif
+    let f = split(f, "^")[0]
+  endif
+
+  let lex = '.md'
+  if stridx(f, '.') !=# "-1"
+    let fe = fnamemodify(f, ":e")
+    for me in g:vimsidian_media_extensions
+      if me ==# fe
+        let lex = ''
+      endif
+    endfor
+  endif
+
+  if lex ==# ''
+    let i = vimsidian#utils#getUserInput("open '" . f . "' > [y/n]")
+    if i !=# "y"
+      return
+    endif
+  endif
+
+  let cmd = "fd . " . g:vimsidian_path . " | grep '/" . f . lex . "' | head -n 1"
   let note = system(cmd)
   if empty(note)
     echo "Not found linking note " . f . '.md'

@@ -6,6 +6,11 @@ if exists('g:loaded_vimsidian_plugin') && g:loaded_vimsidian_plugin
   finish
 endif
 
+" set global options
+if !exists('g:vimsidian_media_extensions')
+  let g:vimsidian_media_extensions = ["png", "jpg", "jpeg", "gif", "bmp", "svg", "mp3", "webm", "wav", "m4a", "ogg", "3gp", "flac", "mp4", "webm", "ogv", "mov", "mkv", "pdf"]
+endif
+
 " commands
 command! VimsidianRgNotesLinkingThisNote call vimsidian#VimsidianRgNotesLinkingThisNote()
 command! -nargs=1 VimsidianRgNotesWithMatches call vimsidian#VimsidianRgNotesWithMatches(<q-args>)
