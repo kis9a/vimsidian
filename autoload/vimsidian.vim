@@ -158,7 +158,7 @@ function! vimsidian#VimsidianMoveToLink()
     endif
   endif
 
-  let cmd = "fd . " . g:vimsidian_path . " | grep '" . f . '.md' . "' | head -n 1"
+  let cmd = "fd . " . g:vimsidian_path . " | grep '/" . f . '.md' . "' | head -n 1"
   let note = system(cmd)
   if empty(note)
     echo "Not found linking note " . f . '.md'
