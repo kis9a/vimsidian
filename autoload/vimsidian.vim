@@ -3,7 +3,7 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " functions
-function! vimsidian#CompleteVimsidianFiles(findstart, base)
+function! vimsidian#VimsidianCompleteNotes(findstart, base)
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1
@@ -26,12 +26,12 @@ function! vimsidian#CompleteVimsidianFiles(findstart, base)
 endfunction
 
 function! vimsidian#VimsidianRgNotesWithMatches(word)
-  let cmd = 'rg -F -n %s --files-with-matches $(realpath ' . g:vimsidian_path . ") | awk '" . '{ print $0 ":1: " }' . "'"
+  let cmd = 'rg -F -n %s --files-with-matches ' . $VIMSIDIAN_PATH . " | awk '" . '{ print $0 ":1: " }' . "'"
   let vimsidian_rg_notes_with_matches = system(printf(cmd, a:word))
   if empty (vimsidian_rg_notes_with_matches)
     echo "Not found '" .a:word . "'"
   else
-    execute 'lcd' g:vimsidian_path
+    execute 'lcd' $VIMSIDIAN_PATH
     cexpr vimsidian_rg_notes_with_matches | copen
   endif
 endfunction
@@ -44,12 +44,12 @@ endfunction
 function! vimsidian#VimsidianRgTagMatches()
   let cword = expand('<cWORD>')
   if cword[0] == "#"
-    let cmd = "rg -n '" . cword . "' $(realpath " . g:vimsidian_path . ")"
+    let cmd = "rg -n '" . cword . "' " . $VIMSIDIAN_PATH
     let vimsidian_rg_tag_matches = system(cmd)
     if empty (vimsidian_rg_tag_matches)
       echo "Not found '" . cword . "'"
     else
-      execute 'lcd' g:vimsidian_path
+      execute 'lcd' $VIMSIDIAN_PATH
       cexpr vimsidian_rg_tag_matches | copen
     endif
   else
@@ -78,13 +78,13 @@ function! vimsidian#VimsidianFdLinkedNotesByThisNote()
     endfor
   endif
 
-  let fdCmd = 'fd . ' . g:vimsidian_path . ' | grep ' . fdGrepArg . "| awk '" . '{ print $0 ":1: " }' . "'"
+  let fdCmd = 'fd . ' . $VIMSIDIAN_PATH . ' | grep ' . fdGrepArg . "| awk '" . '{ print $0 ":1: " }' . "'"
   let vimsidian_fd_linked_notes_by_this_note = system(fdCmd)
   if empty(vimsidian_fd_linked_notes_by_this_note)
     echo "Not found linking notes'"
     return
   else
-    execute 'lcd' g:vimsidian_path
+    execute 'lcd' $VIMSIDIAN_PATH
     cexpr vimsidian_fd_linked_notes_by_this_note | copen
   endif
 endfunction
@@ -99,7 +99,11 @@ function! vimsidian#VimsidianRgNotesLinkingThisNote()
   endif
 endfunction
 
-function! vimsidian#VimsidianMoveToLink()
+function! vimsidian#removeVimsidianLinkToken(str)
+  return substitute(a:str, '\v([|\])', '', 'g')
+endfunction
+
+function! vimsidian#VimsidianGetCursorLink()
   let cc = vimsidian#utils#currentCursorChar()
   let p = vimsidian#utils#prevCursorChar(1)
   let n = vimsidian#utils#nextCursorChar(1)
@@ -112,29 +116,31 @@ function! vimsidian#VimsidianMoveToLink()
 
   if cc ==# '['
     if p !=# '[' && n !=# '['
-      return
+      echo 'No match link token [['
+      return 1
     else
       let r = '\v(^.{' . cl . '})@<=.{-}]]'
       let m = matchstr(l, r)
       if m !=# ''
-        let f .= vimsidian#utils#removeVimsidianLinkToken(m)
+        let f .= vimsidian#removeVimsidianLinkToken(m)
       else
         echo 'No match link token ]]'
-        return
+        return 1
       endif
     endif
   elseif cc ==# ']'
     if p !=# ']' && n !=# ']'
-      return
+      echo 'No match link token [['
+      return 1
     else
       let cr = vimsidian#utils#reverseString(c)
       let r = '\v^.{-}[['
       let m = matchstr(cr, r)
       if m !=# ''
-        let f .= vimsidian#utils#removeVimsidianLinkToken(vimsidian#utils#reverseString(m))
+        let f .= vimsidian#removeVimsidianLinkToken(vimsidian#utils#reverseString(m))
       else
         echo 'No match link token [['
-        return
+        return 1
       endif
     endif
   else
@@ -142,19 +148,19 @@ function! vimsidian#VimsidianMoveToLink()
     let r = '\v^.{-}[['
     let m = matchstr(cr, r)
     if m !=# ''
-      let f .= vimsidian#utils#removeVimsidianLinkToken(vimsidian#utils#reverseString(m))
+      let f .= vimsidian#removeVimsidianLinkToken(vimsidian#utils#reverseString(m))
     else
       echo 'No match link token [['
-      return
+      return 1
     endif
 
     let r = '\v(^.{' . cl . '})@<=.{-}]]'
     let m = matchstr(l, r)
     if m !=# ''
-      let f .= vimsidian#utils#removeVimsidianLinkToken(m)
+      let f .= vimsidian#removeVimsidianLinkToken(m)
     else
       echo 'No match link token ]]'
-      return
+      return 1
     endif
   endif
 
@@ -165,7 +171,7 @@ function! vimsidian#VimsidianMoveToLink()
   if stridx(f, '#') !=# "-1"
     if f[0] ==# '#'
       echo 'Not supported In-note link'
-      return
+      return 1
     endif
     let f = split(f, "#")[0]
   endif
@@ -173,9 +179,18 @@ function! vimsidian#VimsidianMoveToLink()
   if stridx(f, '^') !=# "-1"
     if f[0] ==# '^'
       echo 'Not supported In-note link'
-      return
+      return 1
     endif
     let f = split(f, "^")[0]
+  endif
+
+  return f
+endfunction
+
+function! vimsidian#VimsidianMoveToLink()
+  let f = vimsidian#VimsidianGetCursorLink()
+  if f ==# 1
+    return
   endif
 
   let lex = '.md'
@@ -195,11 +210,36 @@ function! vimsidian#VimsidianMoveToLink()
     endif
   endif
 
-  let cmd = "fd . " . g:vimsidian_path . " | grep '/" . f . lex . "' | head -n 1"
+  let cmd = "fd . " . $VIMSIDIAN_PATH . " | grep '/" . f . lex . "' | head -n 1"
   let note = system(cmd)
   if empty(note)
     echo "Not found linking note " . f . '.md'
     return
+  else
+    execute 'e ' . note
+  endif
+endfunction
+
+function! vimsidian#VimsidianNewNote(dir)
+  let f = vimsidian#VimsidianGetCursorLink()
+  if f ==# 1
+    return
+  endif
+
+  if empty(f)
+    echo 'Link name is empty'
+    return
+  endif
+
+  if empty(glob(a:dir))
+    echo 'No such directory ' . a:dir
+    return
+  endif
+
+  let note = fnamemodify(a:dir, ":p") . f . '.md'
+  if !empty(glob(note))
+    echo 'Already exists ' . note
+    execute 'e ' . note
   else
     execute 'e ' . note
   endif

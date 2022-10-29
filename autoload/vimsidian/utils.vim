@@ -56,9 +56,5 @@ function! vimsidian#utils#reverseString(str)
   return join(reverse(split(a:str, '\zs')), '')
 endfunction
 
-function! vimsidian#utils#removeVimsidianLinkToken(str)
-  return substitute(a:str, '\v([|\])', '', 'g')
-endfunction
-
 " end flags
 let &cpo = s:save_cpo
