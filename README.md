@@ -34,11 +34,11 @@ hi def VimsidianTagColor term=NONE ctermfg=109 guifg=#076678
 hi def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
 
 function! s:vimsidianNewNoteSameDirectoryAsCurrentFile()
-  execute ':VimsidianNewNote ' . fnamemodify(expand("%:p"), ":h")
+  execute ":VimsidianNewNote " . fnamemodify(expand("%:p"), ":h")
 endfunction
 
 function! s:vimsidianNewNoteAtNotesDirectory()
-  execute ':VimsidianNewNote ' . $VIMSIDIAN_PATH . '/notes'
+  execute ":VimsidianNewNote " . $VIMSIDIAN_PATH . "/notes"
 endfunction
 
 augroup vimsidian_mappings
@@ -75,7 +75,7 @@ augroup END
 | link         | `\v\[\[.{-}\]\]`   |
 | link media   | `\v\!\[\[.{-}\]\]` |
 | link heading | `\v\[\[#.{-}\]\]`  |
-| link block   | `\v\[\[#.{-}\]\]`  |
+| link block   | `\v\[\[\^.{-}\]\]` |
 | tag          | `\v\#(\w+)`        |
 
 ### Commands, Functions
