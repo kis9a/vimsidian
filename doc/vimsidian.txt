@@ -1,0 +1,268 @@
+*vimsidian.txt* Help edit obsidian notes in Vim
+
+*vimsidian*
+
+AUTHOR: *kis9a* <kis9ax@gmail.com>
+REPOSITORY: https://github.com/kis9a/vimsidian
+LICENSE: WTFPL
+
+
+==============================================================================
+CONTENTS                                                 *vimsidian-contents*
+
+  INTRODUCTION ........... |vimsidian-introduction|
+  REQUIREMENTS ........... |vimsidian-requirements|
+  OPTIONS ................ |vimsidian-options|
+  COMMANDS ............... |vimsidian-commands|
+
+
+==============================================================================
+INTRODUCTION                                         *vimsidian-introduction*
+
+Vim plugin to help edit obsidian notes in Vim. Highlight, Complement,
+Searching and open links and tags.
+
+Even if you don't use obsidian, you can use it to manage your notes locally.
+This plugin was made for me, but I hope it will be useful for those who
+want to easily edit obsidian notes with vim as I do.
+
+If you have trouble using it, please post an issues.
+Contributions, edits and distribution are also welcome.
+
+
+==============================================================================
+REQUIREMENTS                                         *vimsidian-requirements*
+
+------------------------------------------------------------------------------
+                                                           *vimsidian_path* >
+  |$VIMSIDIAN_PATH|
+
+Export the VIMSIDIAN_PATH environment variable in your shell
+
+------------------------------------------------------------------------------
+                                              *vimsidian_required_commands* >
+Required commands:~
+  fd : https://github.com/sharkdp/fd
+  ripgrep : https://github.com/BurntSushi/ripgrep
+
+
+==============================================================================
+OPTIONS                                                   *vimsidian-options*
+
+All options:~
+  |g:loaded_vimsidian_plugin|
+  |g:vimsidian_log_level|
+  |g:vimsidian_enable_syntax_highlight|
+  |g:vimsidian_enable_complete_functions|
+  |g:vimsidian_complete_paths_search_use_fd|
+  |g:vimsidian_color_definition_use_default|
+  |g:vimsidian_check_required_commands_executable|
+  |g:vimsidian_complete_paths|
+  |g:vimsidian_required_commands|
+  |g:vimsidian_unsuitable_link_chars|
+  |g:vimsidian_internal_link_chars|
+  |g:vimsidian_media_extensions|
+
+------------------------------------------------------------------------------
+                                                *g:loaded_vimsidian_plugin* >
+
+  let g:loaded_vimsidian_plugin = 0
+
+A variable that indicates if the plugin is already loaded.
+You can disable vimsidian by setting value 1
+
+------------------------------------------------------------------------------
+                                                    *g:vimsidian_log_level* >
+
+  let g:vimsidian_log_level = 2
+
+0: NONE, 1:ERROR, 2:INFO, 3:DEBUG
+
+------------------------------------------------------------------------------
+                                     *g:vimsidian_enable_syntax_highlight* >
+
+  let g:vimsidian_enable_syntax_highlight = 1
+
+Variable to control whether syntax highlighting is enabled or disabled,
+enabled by default
+
+------------------------------------------------------------------------------
+                                    *g:vimsidian_enable_complete_functions* >
+
+  let g:vimsidian_enable_complete_functions = 1
+
+Variable that controls enable/disable of note input completion function,
+enabled by default
+
+------------------------------------------------------------------------------
+                                 *g:vimsidian_complete_paths_search_use_fd* >
+
+  let g:vimsidian_complete_paths_search_use_fd = 1
+
+Whether to search files under g:vimsidian_complete_paths using fd,
+use ls when 0
+
+------------------------------------------------------------------------------
+                                *g:vimsidian_color_definition_use_default* >
+
+  let g:vimsidian_color_definition_use_default = 1
+
+A variable that specifies whether to use the default color definition
+
+------------------------------------------------------------------------------
+                          *g:vimsidian_check_required_commands_executable* >
+
+  let g:vimsidian_check_required_commands_executable = 1
+
+A variable to check if the necessary command can be executed when loading the
+plugin
+
+------------------------------------------------------------------------------
+                                                *g:vimsidian_complete_paths >
+
+  let g:vimsidian_complete_paths = []
+
+A list of directories containing notes that complete the input
+
+------------------------------------------------------------------------------
+                                           *g:vimsidian_required_commands* >
+
+  let g:vimsidian_required_commands = ['rg', 'fd', 'grep']
+
+List of commands required to use vimsidian
+
+------------------------------------------------------------------------------
+                                       *g:vimsidian_unsuitable_link_chars* >
+
+  let g:vimsidian_unsuitable_link_chars = ['^', '\|', '#', '[', ']']
+
+List of characters unsuitable for use in link names
+
+------------------------------------------------------------------------------
+                                           *g:vimsidian_internal_link_chars* >
+
+  let g:vimsidian_internal_link_chars = ['^', '\|', '#']
+
+List of characters used for internal links
+
+------------------------------------------------------------------------------
+                                              *g:vimsidian_media_extensions* >
+
+  let g:vimsidian_media_extensions = ["png", "svg", "gif", ...]
+
+A list of extensions
+(https://help.obsidian.md/Obsidian+Publish/Hosting+media+files) to recognize
+as media when interpreting the link under the cursor.
+
+
+==============================================================================
+COMMANDS                                                 *vimsidian-commands*
+
+All commands:~
+  |:VimsidianRgNotesWithMatches|
+  |:VimsidianRgLinesWithMatches|
+  |:VimsidianRgNotesWithMatchesInteractive|
+  |:VimsidianRgLinesWithMatchesInteractive|
+  |:VimsidianFdLinkedNotesByThisNote|
+  |:VimsidianRgNotesLinkingThisNote|
+  |:VimsidianRgTagMatches|
+  |:VimsidianMoveToLink|
+  |:VimsidianMoveToPreviousLink|
+  |:VimsidianMoveToNextLink|
+  |:VimsidianNewNote|
+  |:VimsidianFormatLink|
+
+------------------------------------------------------------------------------
+                                      *vimsidian_cmd_rg_notes_with_matches* >
+  |:VimsidianRgNotesWithMatches|
+
+Search |$VIMSIDIAN_PATH| for a list of notes containing the argument keyword
+and display it in the quickfix list
+
+------------------------------------------------------------------------------
+                                      *vimsidian_cmd_rg_lineswith_matches* >
+  |:VimsidianRgLinesWithMatches|
+
+Search |$VIMSIDIAN_PATH| for a list of lines containing the argument keyword
+and display it in the quickfix list
+
+------------------------------------------------------------------------------
+                             *vimsidian_rg_notes_with_matches_interactive* >
+
+  |:VimsidianRgNotesWithMatchesInteractive| `[keyword]`
+
+Enter the `keyword` for the arguments of the |:VimsidianRgNotesWithMatches|
+command at the prompt
+
+------------------------------------------------------------------------------
+                             *vimsidian_rg_lines_with_matches_interactive* >
+
+  |:VimsidianRgLinesWithMatchesInteractive| `[keyword]`
+
+Enter the `keyword` for the arguments of the |:VimsidianRgLinesWithMatches|
+command at the prompt
+
+------------------------------------------------------------------------------
+                                  *vimsidian_fd_linked_notes_by_this_note* >
+
+  |:VimsidianFdLinkedNotesByThisNote|
+
+Search |$VIMSIDIAN_PATH| for list of notes linked to by this note
+and display it in the quickfix list
+
+------------------------------------------------------------------------------
+                                    *vimsidian_rg_notes_linking_this_note* >
+
+  |:VimsidianRgNotesLinkingThisNote|
+
+Search |$VIMSIDIAN_PATH| for list of notes linking this note
+and display it in the quickfix list
+
+------------------------------------------------------------------------------
+                                                *vimsidian_rg_tag_matches* >
+
+  |:VimsidianRgTagMatches|
+
+Search |$VIMSIDIAN_PATH| for list of matches containing the under cursor
+tag name and display it in the quickfix list
+
+
+------------------------------------------------------------------------------
+                                                  *vimsidian_move_to_link* >
+
+  |:VimsidianMoveToLink|
+
+Search |$VIMSIDIAN_PATH| for the link you are cursor on and move it.
+
+------------------------------------------------------------------------------
+                                          *vimsidian_move_to_previous_link* >
+
+  |:VimsidianMoveToPreviousLink|
+
+Go to link before current cursor
+
+------------------------------------------------------------------------------
+                                              *vimsidian_move_to_next_link* >
+
+  |:VimsidianMoveToNextLink|
+
+Go to link before current cursor
+
+------------------------------------------------------------------------------
+                                                         *vimsidian_new_note* >
+
+  |:VimsidianNewNote `[directory]`
+
+Creates a note with the name of the link under the cursor in a `directory`
+with the name of the argument
+
+------------------------------------------------------------------------------
+                                                    *vimsidian_format_link* >
+
+  |:VimsidianFormatLink|
+
+Format vimsidian link string for the current file
+
+
+==============================================================================
+vim: tw=78:ft=help
