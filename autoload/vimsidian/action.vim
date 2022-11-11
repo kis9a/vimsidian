@@ -1,5 +1,5 @@
 function! vimsidian#action#OpenQuickFix(lst)
-  execute 'lcd' $VIMSIDIAN_PATH
+  execute 'lcd' g:vimsidian_path
   cexpr a:lst | copen
 endfunction
 

@@ -1,4 +1,4 @@
-function! vimsidian#VimsidianCompleteNotes(findstart, base)
+function! vimsidian#CompleteNotes(findstart, base)
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1
@@ -35,47 +35,47 @@ function! vimsidian#VimsidianCompleteNotes(findstart, base)
   endif
 endfunction
 
-function! vimsidian#VimsidianRgLinesWithMatches(word)
-  let cmd = "rg -F -n '%s' " . $VIMSIDIAN_PATH
+function! vimsidian#RgLinesWithMatches(word)
+  let cmd = "rg -F -n '%s' " . g:vimsidian_path
   let matches = system(printf(cmd, a:word))
   if empty (matches)
-    call vimsidian#logger#LogInfo("Not found '" .a:word . "'")
+    call vimsidian#logger#Info("Not found '" .a:word . "'")
   else
     call vimsidian#action#OpenQuickFix(matches)
   endif
 endfunction
 
-function! vimsidian#VimsidianRgNotesWithMatches(word)
-  let cmd = "rg -F -n '%s' --files-with-matches " . $VIMSIDIAN_PATH
+function! vimsidian#RgNotesWithMatches(word)
+  let cmd = "rg -F -n '%s' --files-with-matches " . g:vimsidian_path
   let matches = system(printf(cmd, a:word))
   if empty (matches)
-    call vimsidian#logger#LogInfo("Not found '" .a:word . "'")
+    call vimsidian#logger#Info("Not found '" .a:word . "'")
   else
     let matches = substitute(matches, '\v\n', ':1: \n', 'g')
     call vimsidian#action#OpenQuickFix(matches)
   endif
 endfunction
 
-function! vimsidian#VimsidianRgNotesWithMatchesInteractive()
+function! vimsidian#RgNotesWithMatchesInteractive()
   let i = vimsidian#action#GetUserInput("VimsidianRgNotesWithMatchesInteractive")
-  call vimsidian#VimsidianRgNotesWithMatches(i)
+  call vimsidian#RgNotesWithMatches(i)
 endfunction
 
-function! vimsidian#VimsidianRgLinesWithMatchesInteractive()
+function! vimsidian#RgLinesWithMatchesInteractive()
   let i = vimsidian#action#GetUserInput("VimsidianRgLinesWithMatchesInteractive")
-  call vimsidian#VimsidianRgLinesWithMatches(i)
+  call vimsidian#RgLinesWithMatches(i)
 endfunction
 
-function! vimsidian#VimsidianRgTagMatches()
+function! vimsidian#RgTagMatches()
   let tag = vimsidian#unit#CursorTag()
   if tag ==# 1
-    call vimsidian#logger#LogInfo("Word under the cursor is not a tag")
+    call vimsidian#logger#Info("Word under the cursor is not a tag")
     return
   endif
-  call vimsidian#VimsidianRgLinesWithMatches(tag)
+  call vimsidian#RgLinesWithMatches(tag)
 endfunction
 
-function! vimsidian#VimsidianFdLinkedNotesByThisNote()
+function! vimsidian#FdLinkedNotesByThisNote()
   let links = vimsidian#unit#LinksInThisNote()
   if len(links) > 0
     let grepArg = ''
@@ -83,14 +83,14 @@ function! vimsidian#VimsidianFdLinkedNotesByThisNote()
       let grepArg .= " -e '/" . m . ".md'" " grep -e 'file' -e 'file2'
     endfor
   else
-    call vimsidian#logger#LogInfo("No link found in this note")
+    call vimsidian#logger#Info("No link found in this note")
     return
   endif
 
-  let cmd = 'fd . ' . $VIMSIDIAN_PATH . ' | grep ' . grepArg
+  let cmd = 'fd . ' . g:vimsidian_path . ' | grep ' . grepArg
   let matches = system(cmd)
   if empty(matches)
-    call vimsidian#logger#LogInfo("Linked notes not found")
+    call vimsidian#logger#Info("Linked notes not found")
     return
   else
     let matches = substitute(matches, '\v\n', ':1: \n', 'g')
@@ -98,27 +98,27 @@ function! vimsidian#VimsidianFdLinkedNotesByThisNote()
   endif
 endfunction
 
-function! vimsidian#VimsidianRgNotesLinkingThisNote()
+function! vimsidian#RgNotesLinkingThisNote()
   let fname = fnamemodify(expand("%:t"), ":r")
   let ext = expand("%:e")
   if ext == "md"
-    call vimsidian#VimsidianRgNotesWithMatches("\[\[" . fname . "\]]")
+    call vimsidian#RgNotesWithMatches("\[\[" . fname . "\]]")
   else
-    call vimsidian#VimsidianRgNotesWithMatches("\[\[" . expand("%t") . "\]]")
+    call vimsidian#RgNotesWithMatches("\[\[" . expand("%t") . "\]]")
   endif
 endfunction
 
-function! vimsidian#VimsidianMoveToPreviousLink()
+function! vimsidian#MoveToPreviousLink()
   let [line, col] = vimsidian#unit#PreviousLinkPosition()
   call cursor(line, col)
 endfunction
 
-function! vimsidian#VimsidianMoveToNextLink()
+function! vimsidian#MoveToNextLink()
   let [line, col] = vimsidian#unit#NextLinkPosition()
   call cursor(line, col)
 endfunction
 
-function! vimsidian#VimsidianMoveToLink()
+function! vimsidian#MoveToLink()
   let f = vimsidian#unit#CursorLink()
   if f ==# 1
     return
@@ -141,7 +141,7 @@ function! vimsidian#VimsidianMoveToLink()
     endif
   endif
 
-  let cmd = "fd . " . $VIMSIDIAN_PATH . " | grep '/" . f . lex . "'"
+  let cmd = "fd . " . g:vimsidian_path . " | grep '/" . f . lex . "'"
   let note = system(cmd)
   let snote = split(note, "\n")
   if len(snote) > 0
@@ -149,40 +149,40 @@ function! vimsidian#VimsidianMoveToLink()
   endif
 
   if empty(note)
-    call vimsidian#logger#LogInfo("Linked note not found '" . f . ".md'")
+    call vimsidian#logger#Info("Linked note not found '" . f . ".md'")
     return
   else
     execute 'e ' . note
   endif
 endfunction
 
-function! vimsidian#VimsidianNewNote(dir)
+function! vimsidian#NewNote(dir)
   let f = vimsidian#unit#CursorLink()
   if f ==# 1
-    call vimsidian#logger#LogInfo("Word under the cursor is not a link")
+    call vimsidian#logger#Info("Word under the cursor is not a link")
     return
   endif
 
   if empty(f)
-    call vimsidian#logger#LogInfo('Link name is empty')
+    call vimsidian#logger#Info('Link name is empty')
     return
   endif
 
   if empty(glob(a:dir))
-    call vimsidian#logger#LogInfo('No such directory ' . a:dir)
+    call vimsidian#logger#Info('No such directory ' . a:dir)
     return
   endif
 
   let note = fnamemodify(a:dir, ":p") . f . '.md'
   if !empty(glob(note))
-    call vimsidian#logger#LogInfo('Already exists ' . note)
+    call vimsidian#logger#Info('Already exists ' . note)
     execute 'e ' . note
   else
     execute 'e ' . note
   endif
 endfunction
 
-function! vimsidian#VimsidianFormatLink()
+function! vimsidian#FormatLink()
   let file = expand("%:p")
   let s = join(readfile(file), "\n")
   let s = vimsidian#unit#FormatLinkString(s)

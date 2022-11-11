@@ -6,13 +6,13 @@ function! vimsidian#logger#LogError(msg)
   endif
 endfunction
 
-function! vimsidian#logger#LogInfo(msg)
+function! vimsidian#logger#Info(msg)
   if g:vimsidian_log_level > 1
     echo '[VIMSIDIAN] ' . a:msg
   endif
 endfunction
 
-function! vimsidian#logger#LogDebug(msg)
+function! vimsidian#logger#Debug(msg)
   if g:vimsidian_log_level > 2
     echo '[VIMSIDIAN] [DEBUG] ' . a:msg
   endif

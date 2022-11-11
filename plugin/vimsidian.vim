@@ -7,12 +7,21 @@ if exists('g:loaded_vimsidian_plugin') && g:loaded_vimsidian_plugin
   finish
 endif
 
-if empty(glob($VIMSIDIAN_PATH))
-  echoerr '[VIMSIDIAN] Required $VIMSIDIAN_PATH environment variable, export $VIMSIDIAN_PATH on your shell'
+if !exists('g:vimsidian_path')
+  echoerr '[VIMSIDIAN] Required g:vimsidian_path variable'
+  finish
+endif
+
+if empty(glob(g:vimsidian_path))
+  echoerr "[VIMSIDIAN] No such directory '" . g:vimsidian_path . "'"
   finish
 endif
 
 " set global options
+if empty($VIMSIDIAN_PATH_PATTERN)
+  let $VIMSIDIAN_PATH_PATTERN = g:vimsidian_path . "/*.md"
+endif
+
 if !exists('g:vimsidian_log_level')
   let g:vimsidian_log_level = 2 " 0: NONE, 1:ERROR, 2:INFO, 3:DEBUG
 endif
@@ -68,53 +77,47 @@ if g:vimsidian_check_required_commands_executable
 endif
 
 " commands
-command! -nargs=1 VimsidianRgNotesWithMatches call vimsidian#VimsidianRgNotesWithMatches(<q-args>)
-command! -nargs=1 VimsidianRgLinesWithMatches call vimsidian#VimsidianRgLinesWithMatches <q-args>)
-command! VimsidianRgNotesWithMatchesInteractive call vimsidian#VimsidianRgNotesWithMatchesInteractive()
-command! VimsidianRgLinesWithMatchesInteractive call vimsidian#VimsidianRgLinesWithMatchesInteractive()
-command! VimsidianRgNotesLinkingThisNote call vimsidian#VimsidianRgNotesLinkingThisNote()
-command! VimsidianFdLinkedNotesByThisNote call vimsidian#VimsidianFdLinkedNotesByThisNote()
-command! VimsidianRgTagMatches call vimsidian#VimsidianRgTagMatches()
-command! VimsidianMoveToLink call vimsidian#VimsidianMoveToLink()
-command! VimsidianMoveToNextLink call vimsidian#VimsidianMoveToNextLink()
-command! VimsidianMoveToPreviousLink call vimsidian#VimsidianMoveToPreviousLink()
-command! -nargs=1 VimsidianNewNote call vimsidian#VimsidianNewNote(<q-args>)
-command! VimsidianFormatLink call vimsidian#VimsidianFormatLink()
+command! -nargs=1 VimsidianRgNotesWithMatches call vimsidian#RgNotesWithMatches(<q-args>)
+command! -nargs=1 VimsidianRgLinesWithMatches call vimsidian#RgLinesWithMatches(<q-args>)
+command! VimsidianRgNotesWithMatchesInteractive call vimsidian#RgNotesWithMatchesInteractive()
+command! VimsidianRgLinesWithMatchesInteractive call vimsidian#RgLinesWithMatchesInteractive()
+command! VimsidianRgNotesLinkingThisNote call vimsidian#RgNotesLinkingThisNote()
+command! VimsidianFdLinkedNotesByThisNote call vimsidian#FdLinkedNotesByThisNote()
+command! VimsidianRgTagMatches call vimsidian#RgTagMatches()
+command! VimsidianMoveToLink call vimsidian#MoveToLink()
+command! VimsidianMoveToNextLink call vimsidian#MoveToNextLink()
+command! VimsidianMoveToPreviousLink call vimsidian#MoveToPreviousLink()
+command! -nargs=1 VimsidianNewNote call vimsidian#NewNote(<q-args>)
+command! VimsidianFormatLink call vimsidian#FormatLink()
 
-" sets
-augroup vimsidian_autocmd_complete_functions
+" augroup
+augroup vimsidian_plugin
+  au!
   if g:vimsidian_enable_complete_functions
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md setlocal completefunc=vimsidian#VimsidianCompleteNotes
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN setlocal completefunc=vimsidian#CompleteNotes
   endif
-augroup END
-
-" syntax hi
-augroup vimsidian_syntax_highlight
-  autocmd!
 
   if g:vimsidian_color_definition_use_default
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! def VimsidianLinkColor term=NONE ctermfg=47 guifg=#689d6a
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! def VimsidianLinkMediaColor term=NONE ctermfg=142 guifg=#b8bb26
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! def VimsidianLinkHeader term=NONE ctermfg=142 guifg=#b8bb26
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! def VimsidianLinkBlock term=NONE ctermfg=142 guifg=#b8bb26
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! def VimsidianTagColor term=NONE ctermfg=109 guifg=#076678
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkColor term=NONE ctermfg=47 guifg=#689d6a
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkMediaColor term=NONE ctermfg=142 guifg=#b8bb26
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkHeader term=NONE ctermfg=142 guifg=#b8bb26
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkBlock term=NONE ctermfg=142 guifg=#b8bb26
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianTagColor term=NONE ctermfg=109 guifg=#076678
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
   endif
 
   if g:vimsidian_enable_syntax_highlight
-    " syntax matches
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md syn match VimsidianLink containedin=markdownH1,markdownH2,markdownH3,markdownH4,markdownH5,markdownH6 /\v\[\[.{-}\]\]/
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md syn match VimsidianLinkMedia containedin=VimsidianLink /\v\!\[\[.{-}\]\]/
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md syn match VimsidianLinkHeader containedin=VimsidianLink /\v\[\[#.{-}\]\]/
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md syn match VimsidianLinkBlock containedin=VimsidianLink /\v\[\[\^.{-}\]\]/
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md syn match VimsidianTag containedin=VimsidianIdea /\v\#(\w+)/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLink containedin=markdownH1,markdownH2,markdownH3,markdownH4,markdownH5,markdownH6 /\v\[\[.{-}\]\]/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkMedia containedin=VimsidianLink /\v\!\[\[.{-}\]\]/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkHeader containedin=VimsidianLink /\v\[\[#.{-}\]\]/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkBlock containedin=VimsidianLink /\v\[\[\^.{-}\]\]/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianTag containedin=VimsidianIdea /\v\#(\w+)/
 
-    " link colors
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! link VimsidianLink VimsidianLinkColor
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! link VimsidianLinkMedia VimsidianLinkMediaColor
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! link VimsidianLinkHeader VimsidianLinkHeaderColor
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! link VimsidianLinkBlock VimsidianLinkBlockColor
-    autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md hi! link VimsidianTag VimsidianTagColor
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLink VimsidianLinkColor
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLinkMedia VimsidianLinkMediaColor
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLinkHeader VimsidianLinkHeaderColor
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLinkBlock VimsidianLinkBlockColor
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianTag VimsidianTagColor
   endif
 augroup END
 

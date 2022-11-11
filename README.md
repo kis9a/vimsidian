@@ -29,12 +29,13 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 - Display notes in the quickfix window containing the tag string under the cursor
 - Default syntax highlighting settings
 - Custom formatting of link spacing
+- Manage multiple projects (Obsidian Vault)
+- Fewer dependencies
 
 ## Initialization
 
 ### Requirements
 
-- `VIMSIDIAN_PATH` environment variable
 - [ripgrep](https://github.com/BurntSushi/ripgrep) command
 - [fd](https://github.com/sharkdp/fd) command
 
@@ -48,37 +49,71 @@ Use your favorite plugin manager
 Plug "kis9a/vimsidian"
 ```
 
-## Configuration
+## Configuration (e.g.)
 
 #### • Minimal
 
 ```vim
-let g:loaded_vimsidian_plugin = 0
+let g:vimsidian_path = $HOME . "/obsidian"
 let g:vimsidian_enable_syntax_highlight = 1
 let g:vimsidian_enable_complete_functions = 1
-let g:vimsidian_complete_paths = [$VIMSIDIAN_PATH . "/notes", $VIMSIDIAN_PATH . "/images"]
+let g:vimsidian_complete_paths = [g:vimsidian_path . "/notes", g:vimsidian_path . "/images"]
+let $VIMSIDIAN_PATH_PATTERN = g:vimsidian_path . "/*.md"
 
 function! s:vimsidianNewNoteAtNotesDirectory()
-  execute ":VimsidianNewNote " . $VIMSIDIAN_PATH . "/notes"
+  execute ":VimsidianNewNote " . g:vimsidian_path . "/notes"
 endfunction
 
-function s:vimsidianMappings()
-  nnoremap <silent> sl :VimsidianFdLinkedNotesByThisNote<CR>
-  nnoremap <silent> sg :VimsidianRgNotesLinkingThisNote<CR>
-  nnoremap <silent> st :VimsidianRgTagMatches<CR>
-  nnoremap <silent> sm :VimsidianRgNotesWithMatchesInteractive<CR>
-  nnoremap <silent> si :VimsidianRgLinesWithMatchesInteractive<CR>
-  nnoremap <silent> sF :VimsidianMoveToLink<CR>
-  nnoremap <silent> sk :VimsidianMoveToPreviousLink<CR>
-  nnoremap <silent> sj :VimsidianMoveToNextLink<CR>
-  nnoremap <silent> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
-  nnoremap <silent> sf :VimsidianFormatLink<CR>
-endfunction
-
-autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/*.md call s:vimsidianMappings()
+augroup vimsidian_augroup
+  au!
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sl :VimsidianFdLinkedNotesByThisNote<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sg :VimsidianRgNotesLinkingThisNote<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> st :VimsidianRgTagMatches<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sm :VimsidianRgNotesWithMatchesInteractive<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> si :VimsidianRgLinesWithMatchesInteractive<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sF :VimsidianMoveToLink<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sk :VimsidianMoveToPreviousLink<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sj :VimsidianMoveToNextLink<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sf :VimsidianFormatLink<CR>
+augroup END
 ```
 
 #### • Advance, ideas
+
+<!--{{{ Multiple g:vimsidian_path (Vault) -->
+<details open>
+<summary>Multiple g:vimsidian_path (Obsidian Vault)</summary>
+<br/>
+
+Multiple vimsidian_paths (Obsidian Vault) can be managed.
+The $VIMSIDIAN_PATH_PATTERN is the autocmd path-pattern (:h autocmd-pattern).
+g:vimsidian_path variable is the path where notes and completion suggestions are searched
+
+```vim
+let g:vimsidian_path_main = $HOME . "/obsidian"
+let g:vimsidian_path_sub = $HOME . "/Nsidian"
+let g:vimsidian_path = g:vimsidian_path_main
+let $VIMSIDIAN_PATH_PATTERN = g:vimsidian_path_main . "/*.md," . g:vimsidian_path_sub . "/*.md"
+
+function! s:vimsidianSwitchVault()
+  if stridx(expand("%:p"), g:vimsidian_path_main) !=# "-1"
+    let g:vimsidian_path = g:vimsidian_path_main
+    let g:vimsidian_complete_paths = [g:vimsidian_path_main . "/notes", g:vimsidian_path_main  . "/images"]
+  elseif stridx(expand("%:p"), g:vimsidian_path_sub) !=# "-1"
+    let g:vimsidian_path = g:vimsidian_path_sub
+    let g:vimsidian_complete_paths = [g:vimsidian_path_sub . "/Nnotes"]
+  endif
+endfunction
+
+augroup vimsidian_augroup
+  au!
+  au VimEnter,BufNewFile,BufReadPost *.md call s:vimsidianSwitchVault()
+" ry ...
+```
+
+</details>
+<!--}}}-->
 
 <!--{{{ Define the colors yourself -->
 <details close>
@@ -121,7 +156,7 @@ let g:vimsidian_check_required_commands_executable = 0
 ```vim
 " vimsidian complete paths search use ls command
 let g:vimsidian_complete_paths_search_use_fd = 0
-let g:vimsidian_complete_paths = [$VIMSIDIAN_PATH . "/notes/foo", $VIMSIDIAN_PATH . "/notes/b"]
+let g:vimsidian_complete_paths = [g:vimsidian_path . "/notes/foo", g:vimsidian_path . "/notes/b"]
 ```
 
 </details>
@@ -137,7 +172,7 @@ function! s:vimsidianNewNoteSameDirectoryAsCurrentFile()
   execute ':VimsidianNewNote ' . fnamemodify(expand("%:p"), ":h")
 endfunction
 
-autocmd BufNewFile,BufReadPost $VIMSIDIAN_PATH/\*.md nnoremap <silent> sC :call <SID>vimsidianNewNoteSameDirectoryAsCurrentFile()<CR>
+au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> sC :call <SID>vimsidianNewNoteSameDirectoryAsCurrentFile()<CR>
 ```
 
 </details>
@@ -163,7 +198,6 @@ endfunction
 - [Vim doc - Syntax highlight, Variables and Commands help](./doc/vimsidian.txt)
 
 ```vim
-" Run some Vimsidian command to load
 :h vimsidian
 ```
 

@@ -39,4 +39,3 @@ endfunction
 function! vimsidian#util#ReverseString(str)
   return join(reverse(split(a:str, '\zs')), '')
 endfunction
-

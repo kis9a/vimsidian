@@ -63,7 +63,7 @@ function! vimsidian#unit#CursorLink()
 
   if cc ==# '['
     if p !=# '[' && n !=# '['
-      call vimsidian#logger#LogDebug('1 No match link token [[')
+      call vimsidian#logger#Debug('1 No match link token [[')
       return 1
     else
       let r = '\v(^.{' . cl . '})@<=.{-}]]'
@@ -71,13 +71,13 @@ function! vimsidian#unit#CursorLink()
       if m !=# ''
         let f .= vimsidian#unit#TrimLinkToken(m)
       else
-        call vimsidian#logger#LogDebug('1 No match link token ]]')
+        call vimsidian#logger#Debug('1 No match link token ]]')
         return 1
       endif
     endif
   elseif cc ==# ']'
     if p !=# ']' && n !=# ']'
-      call vimsidian#logger#LogDebug('2 No match link token [[')
+      call vimsidian#logger#Debug('2 No match link token [[')
       return 1
     else
       let cr = vimsidian#util#ReverseString(c)
@@ -86,7 +86,7 @@ function! vimsidian#unit#CursorLink()
       if m !=# ''
         let f .= vimsidian#unit#TrimLinkToken(vimsidian#util#ReverseString(m))
       else
-        call vimsidian#logger#LogDebug('2 No match link token [[')
+        call vimsidian#logger#Debug('2 No match link token [[')
         return 1
       endif
     endif
@@ -97,7 +97,7 @@ function! vimsidian#unit#CursorLink()
     if m !=# ''
       let f .= vimsidian#unit#TrimLinkToken(vimsidian#util#ReverseString(m))
     else
-      call vimsidian#logger#LogDebug('3 No match link token [[')
+      call vimsidian#logger#Debug('3 No match link token [[')
       return 1
     endif
 
@@ -106,7 +106,7 @@ function! vimsidian#unit#CursorLink()
     if m !=# ''
       let f .= vimsidian#unit#TrimLinkToken(m)
     else
-      call vimsidian#logger#LogDebug('3 No match link token ]]')
+      call vimsidian#logger#Debug('3 No match link token ]]')
       return 1
     endif
   endif
@@ -114,7 +114,7 @@ function! vimsidian#unit#CursorLink()
   for ilc in g:vimsidian_internal_link_chars
     if stridx(f, ilc) !=# "-1"
       if f[0] ==# ilc
-        call vimsidian#logger#LogDebug('Not supported In-note link')
+        call vimsidian#logger#Debug('Not supported In-note link')
         return 1
       endif
 
@@ -150,7 +150,7 @@ function! vimsidian#unit#PreviousLinkPosition()
     let lnums = [] | silent! g/\[\[.\{-}]]/call add(lnums, line('.'))
     let lnums = reverse(sort(lnums, 'n'))
     if empty(lnums)
-      call vimsidian#logger#LogInfo('Not found previous link')
+      call vimsidian#logger#Info('Not found previous link')
       return [l, cl]
     else
       for lnum in lnums
@@ -197,7 +197,7 @@ function! vimsidian#unit#NextLinkPosition()
     let lnums = [] | silent! g/\[\[.\{-}]]/call add(lnums, line('.'))
     let lnums = sort(lnums, 'n')
     if empty(lnums)
-      call vimsidian#logger#LogInfo('Not found next link')
+      call vimsidian#logger#Info('Not found next link')
       return [l, cl]
     else
       for lnum in lnums
