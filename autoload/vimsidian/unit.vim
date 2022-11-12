@@ -1,8 +1,8 @@
-function! vimsidian#unit#TrimLinkToken(str)
+function! vimsidian#unit#TrimLinkToken(str) abort
   return substitute(a:str, '\v([|\])', '', 'g')
 endfunction
 
-function! vimsidian#unit#CursorTag()
+function! vimsidian#unit#CursorTag() abort
   let cword = expand('<cWORD>')
   if cword[0] ==# "#"
     return cword
@@ -11,7 +11,7 @@ function! vimsidian#unit#CursorTag()
   endif
 endfunction
 
-function! vimsidian#unit#LinksInThisNote()
+function! vimsidian#unit#LinksInThisNote() abort
   let cmd = []
   if stridx(system("grep --version"), "BSD") == "-1"
     call add(cmd, 'grep -oP') " Use GNU grep option
@@ -50,7 +50,7 @@ function! vimsidian#unit#LinksInThisNote()
   return uniq(sort(new_links))
 endfunction
 
-function! vimsidian#unit#CursorLink()
+function! vimsidian#unit#CursorLink() abort
   let cc = vimsidian#util#CurrentCursorChar()
   let p = vimsidian#util#PrevCursorChar(1)
   let n = vimsidian#util#NextCursorChar(1)
@@ -58,7 +58,6 @@ function! vimsidian#unit#CursorLink()
   let cs = split(c, '\zs')
   let cl = len(cs)
   let l = vimsidian#util#LineChar()
-  let ll = vimsidian#util#CharLen(l)
   let f = ''
 
   if cc ==# '['
@@ -114,13 +113,11 @@ function! vimsidian#unit#CursorLink()
   return f
 endfunction
 
-function! vimsidian#unit#PreviousLinkPosition()
-  let cc = vimsidian#util#CurrentCursorChar()
+function! vimsidian#unit#PreviousLinkPosition() abort
   let c = vimsidian#util#CharToCol()
   let cs = split(c, '\zs')
   let cl = len(cs)
   let l = vimsidian#util#LineChar()
-  let ll = vimsidian#util#CharLen(l)
   let cln = line('.')
 
   let m = matchstr(vimsidian#util#ReverseString(c), '\v^.{-}]]')
@@ -163,13 +160,11 @@ function! vimsidian#unit#PreviousLinkPosition()
   endif
 endfunction
 
-function! vimsidian#unit#NextLinkPosition()
-  let cc = vimsidian#util#CurrentCursorChar()
+function! vimsidian#unit#NextLinkPosition() abort
   let c = vimsidian#util#CharToCol()
   let cs = split(c, '\zs')
   let cl = len(cs)
   let l = vimsidian#util#LineChar()
-  let ll = vimsidian#util#CharLen(l)
   let cln = line('.')
 
   let m = matchstr(l, '\v(^.{' . cl . '})@<=.{-}[[')
@@ -199,7 +194,6 @@ function! vimsidian#unit#NextLinkPosition()
               return [lnum, 1]
             endif
           endif
-          return [l, cl]
         endif
       endfor
 
@@ -219,7 +213,7 @@ function! vimsidian#unit#NextLinkPosition()
   endif
 endfunction
 
-function! vimsidian#unit#FormatLinkString(s)
+function! vimsidian#unit#FormatLinkString(s) abort
   let s = substitute(a:s, '\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<![[', ' [[', 'g')
   let s = substitute(s, '\v]](\s|\n|$|\.|\,|\)|[\u3001]|[\u3002])@!', ']] ', 'g')
   let s = substitute(s, '\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<!\s+[[', ' [[', 'g')

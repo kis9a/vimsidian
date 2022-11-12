@@ -1,4 +1,4 @@
-function! vimsidian#logger#LogError(msg)
+function! vimsidian#logger#LogError(msg) abort
   if g:vimsidian_log_level > 0
     echohl ErrorMsg
     echo '[VIMSIDIAN] ' . a:msg
@@ -6,13 +6,13 @@ function! vimsidian#logger#LogError(msg)
   endif
 endfunction
 
-function! vimsidian#logger#Info(msg)
+function! vimsidian#logger#Info(msg) abort
   if g:vimsidian_log_level > 1
     echo '[VIMSIDIAN] ' . a:msg
   endif
 endfunction
 
-function! vimsidian#logger#Debug(msg)
+function! vimsidian#logger#Debug(msg) abort
   if g:vimsidian_log_level > 2
     echo '[VIMSIDIAN] [DEBUG] ' . a:msg
   endif

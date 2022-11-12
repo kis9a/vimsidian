@@ -13,7 +13,7 @@ if !exists('g:vimsidian_path')
 endif
 
 if empty(glob(g:vimsidian_path))
-  echoerr "[VIMSIDIAN] No such directory '" . g:vimsidian_path . "'"
+  echoerr "[VIMSIDIAN] No such directory g:vimsidian_path '" . g:vimsidian_path . "'"
   finish
 endif
 
@@ -68,9 +68,9 @@ endif
 
 " check required commands
 if g:vimsidian_check_required_commands_executable
-  for cmd in g:vimsidian_required_commands
-    if !executable(cmd)
-      echoerr '[VIMSIDIAN] Command not found: ' . cmd
+  for g:cmd in g:vimsidian_required_commands
+    if !executable(g:cmd)
+      echoerr '[VIMSIDIAN] Command not found: ' . g:cmd
       finish
     endif
   endfor

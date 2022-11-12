@@ -1,4 +1,4 @@
-function! vimsidian#CompleteNotes(findstart, base)
+function! vimsidian#CompleteNotes(findstart, base) abort
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1
@@ -35,7 +35,7 @@ function! vimsidian#CompleteNotes(findstart, base)
   endif
 endfunction
 
-function! vimsidian#RgLinesWithMatches(word)
+function! vimsidian#RgLinesWithMatches(word) abort
   let cmd = ['rg', '-F', '-n', "'" . a:word ."'", g:vimsidian_path]
   let matches = vimsidian#action#System(cmd)
   if empty (matches)
@@ -45,7 +45,7 @@ function! vimsidian#RgLinesWithMatches(word)
   endif
 endfunction
 
-function! vimsidian#RgNotesWithMatches(word)
+function! vimsidian#RgNotesWithMatches(word) abort
   let cmd = ['rg', '-F', '-n', "'" . a:word ."'", '--files-with-matches', g:vimsidian_path]
   let matches = vimsidian#action#System(cmd)
   if empty (matches)
@@ -56,17 +56,17 @@ function! vimsidian#RgNotesWithMatches(word)
   endif
 endfunction
 
-function! vimsidian#RgNotesWithMatchesInteractive()
+function! vimsidian#RgNotesWithMatchesInteractive() abort
   let i = vimsidian#action#GetUserInput("VimsidianRgNotesWithMatchesInteractive")
   call vimsidian#RgNotesWithMatches(i)
 endfunction
 
-function! vimsidian#RgLinesWithMatchesInteractive()
+function! vimsidian#RgLinesWithMatchesInteractive() abort
   let i = vimsidian#action#GetUserInput("VimsidianRgLinesWithMatchesInteractive")
   call vimsidian#RgLinesWithMatches(i)
 endfunction
 
-function! vimsidian#RgTagMatches()
+function! vimsidian#RgTagMatches() abort
   let tag = vimsidian#unit#CursorTag()
   if tag ==# 1
     call vimsidian#logger#Info("Word under the cursor is not a tag")
@@ -75,7 +75,7 @@ function! vimsidian#RgTagMatches()
   call vimsidian#RgLinesWithMatches(tag)
 endfunction
 
-function! vimsidian#FdLinkedNotesByThisNote()
+function! vimsidian#FdLinkedNotesByThisNote() abort
   let links = vimsidian#unit#LinksInThisNote()
   if len(links) > 0
     let grepArg = ''
@@ -98,27 +98,27 @@ function! vimsidian#FdLinkedNotesByThisNote()
   endif
 endfunction
 
-function! vimsidian#RgNotesLinkingThisNote()
+function! vimsidian#RgNotesLinkingThisNote() abort
   let fname = fnamemodify(expand("%:t"), ":r")
   let ext = expand("%:e")
   if ext == "md"
     call vimsidian#RgNotesWithMatches("\[\[" . fname . "\]]")
   else
-    call vimsidian#RgNotesWithMatches("\[\[" . expand("%t") . "\]]")
+    call vimsidian#RgNotesWithMatches("\[\[" . expand("%:t") . "\]]")
   endif
 endfunction
 
-function! vimsidian#MoveToPreviousLink()
+function! vimsidian#MoveToPreviousLink() abort
   let [line, col] = vimsidian#unit#PreviousLinkPosition()
   call cursor(line, col)
 endfunction
 
-function! vimsidian#MoveToNextLink()
+function! vimsidian#MoveToNextLink() abort
   let [line, col] = vimsidian#unit#NextLinkPosition()
   call cursor(line, col)
 endfunction
 
-function! vimsidian#MoveToLink()
+function! vimsidian#MoveToLink() abort
   let f = vimsidian#unit#CursorLink()
   if f ==# 1
     return
@@ -207,7 +207,7 @@ function! vimsidian#MoveToLink()
   endif
 endfunction
 
-function! vimsidian#NewNote(dir)
+function! vimsidian#NewNote(dir) abort
   let f = vimsidian#unit#CursorLink()
   if f ==# 1
     call vimsidian#logger#Info("Word under the cursor is not a link")
@@ -277,7 +277,7 @@ function! vimsidian#NewNote(dir)
   endif
 endfunction
 
-function! vimsidian#FormatLink()
+function! vimsidian#FormatLink() abort
   let file = expand("%:p")
   let s = join(readfile(file), "\n")
   let s = vimsidian#unit#FormatLinkString(s)

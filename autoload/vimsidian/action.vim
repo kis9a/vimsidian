@@ -1,9 +1,9 @@
-function! vimsidian#action#OpenQuickFix(lst)
+function! vimsidian#action#OpenQuickFix(lst) abort
   execute 'lcd' g:vimsidian_path
   cexpr a:lst | copen
 endfunction
 
-function! vimsidian#action#GetUserInput(label)
+function! vimsidian#action#GetUserInput(label) abort
   let curline = getline('.')
   echohl VimsidianPromptColor
   call inputsave()
@@ -14,10 +14,10 @@ function! vimsidian#action#GetUserInput(label)
   return input
 endfunction
 
-function! vimsidian#action#WriteFile(s, f, m)
+function! vimsidian#action#WriteFile(s, f, m) abort
   call writefile(a:s, a:f, a:m)
 endfunction
 
-function! vimsidian#action#System(cmd)
+function! vimsidian#action#System(cmd) abort
   return system(join(a:cmd, " "))
 endfunction
