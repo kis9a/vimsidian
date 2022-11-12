@@ -17,3 +17,7 @@ endfunction
 function! vimsidian#action#WriteFile(s, f, m)
   call writefile(a:s, a:f, a:m)
 endfunction
+
+function! vimsidian#action#System(cmd)
+  return system(join(a:cmd, " "))
+endfunction

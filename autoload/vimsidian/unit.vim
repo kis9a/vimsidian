@@ -12,16 +12,16 @@ function! vimsidian#unit#CursorTag()
 endfunction
 
 function! vimsidian#unit#LinksInThisNote()
-  let cmd = ''
+  let cmd = []
   if stridx(system("grep --version"), "BSD") == "-1"
-    let cmd .= 'grep -oP' " Use GNU grep option
+    call add(cmd, 'grep -oP') " Use GNU grep option
   else
-    let cmd .= 'grep -oE' " Use BSD grep option
+    call add(cmd, 'grep -oE') " Use BSD grep option
   endif
 
-  let cmd .= " '\\[\\[.*?\\]]' '%s'"
   let absolutePath=expand('%:p')
-  let links = system(printf(cmd, absolutePath))
+  call add(cmd,  " '\\[\\[.*?\\]]' '" . absolutePath . "'")
+  let links = vimsidian#action#System(cmd)
   let links = split(links, '\n')
 
   let new_links = []
@@ -110,20 +110,6 @@ function! vimsidian#unit#CursorLink()
       return 1
     endif
   endif
-
-  for ilc in g:vimsidian_internal_link_chars
-    if stridx(f, ilc) !=# "-1"
-      if f[0] ==# ilc
-        call vimsidian#logger#Debug('Not supported In-note link')
-        return 1
-      endif
-
-      let sf = split(f, ilc)
-      if len(sf) > 0
-        let f = sf[0]
-      endif
-    endif
-  endfor
 
   return f
 endfunction

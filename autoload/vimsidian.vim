@@ -12,14 +12,14 @@ function! vimsidian#CompleteNotes(findstart, base)
     let notes = []
 
     if g:vimsidian_complete_paths_search_use_fd
-      let cmd = 'fd . '
+      let cmd = ['fd', '.']
     else
-      let cmd = 'ls '
+      let cmd = ['ls']
     endif
 
     for f in g:vimsidian_complete_paths
-      let cmd .= "'" . f . "'"
-      let rs = system(cmd)
+      call add(cmd, "'" . f . "'")
+      let rs = vimsidian#action#System(cmd)
 
       for n in split(rs, '\n')
         call add(notes, substitute(fnamemodify(n, ":t"),  '\v.md$', '', 'g'))
@@ -36,8 +36,8 @@ function! vimsidian#CompleteNotes(findstart, base)
 endfunction
 
 function! vimsidian#RgLinesWithMatches(word)
-  let cmd = "rg -F -n '%s' " . g:vimsidian_path
-  let matches = system(printf(cmd, a:word))
+  let cmd = ['rg', '-F', '-n', "'" . a:word ."'", g:vimsidian_path]
+  let matches = vimsidian#action#System(cmd)
   if empty (matches)
     call vimsidian#logger#Info("Not found '" .a:word . "'")
   else
@@ -46,8 +46,8 @@ function! vimsidian#RgLinesWithMatches(word)
 endfunction
 
 function! vimsidian#RgNotesWithMatches(word)
-  let cmd = "rg -F -n '%s' --files-with-matches " . g:vimsidian_path
-  let matches = system(printf(cmd, a:word))
+  let cmd = ['rg', '-F', '-n', "'" . a:word ."'", '--files-with-matches', g:vimsidian_path]
+  let matches = vimsidian#action#System(cmd)
   if empty (matches)
     call vimsidian#logger#Info("Not found '" .a:word . "'")
   else
@@ -87,8 +87,8 @@ function! vimsidian#FdLinkedNotesByThisNote()
     return
   endif
 
-  let cmd = 'fd . ' . g:vimsidian_path . ' | grep ' . grepArg
-  let matches = system(cmd)
+  let cmd = ['fd', '.', g:vimsidian_path, '|', 'grep', grepArg]
+  let matches = vimsidian#action#System(cmd)
   if empty(matches)
     call vimsidian#logger#Info("Linked notes not found")
     return
@@ -124,6 +124,38 @@ function! vimsidian#MoveToLink()
     return
   endif
 
+  if empty(f)
+    call vimsidian#logger#Info('Link name is empty')
+    return
+  endif
+
+  let fn = ""
+  if stridx(f, "#") !=# "-1"
+    if f[0] ==# "#"
+      let sf = split(f, "#")
+      if len(sf) > 0
+        let fn = sf[0]
+      endif
+      let f = fnamemodify(expand("%:r"), ":t")
+    else
+      let sf = split(f, "#")
+      if len(sf) > 0
+        let f = sf[0]
+      endif
+
+      if len(sf) > 1
+        let fn = sf[1]
+      endif
+    endif
+  endif
+
+  if stridx(f, "|") !=# "-1"
+    let sf = split(f, "|")
+    if len(sf) > 0
+      let f = sf[0]
+    endif
+  endif
+
   let lex = '.md'
   if stridx(f, '.') !=# "-1"
     let fe = fnamemodify(f, ":e")
@@ -141,8 +173,8 @@ function! vimsidian#MoveToLink()
     endif
   endif
 
-  let cmd = "fd . " . g:vimsidian_path . " | grep '/" . f . lex . "'"
-  let note = system(cmd)
+  let cmd = ['fd', '.', g:vimsidian_path, '|', 'grep', "'" . '/' . f . lex . "'"]
+  let note = vimsidian#action#System(cmd)
   let snote = split(note, "\n")
   if len(snote) > 0
     let note = snote[0]
@@ -153,6 +185,25 @@ function! vimsidian#MoveToLink()
     return
   else
     execute 'e ' . note
+  endif
+
+  if !empty(fn)
+    let lnums = []
+    if fn[0] ==# "^"
+      silent! execute "g/" . escape(fn, '^') . "$/call add(lnums, line('.'))"
+      if len(lnums) > 0
+        call cursor(lnums[0], 1)
+      else
+        call vimsidian#logger#Debug("g/" . escape(fn, '^') . "$/call add(lnums, line('.'))")
+      endif
+    else
+      silent! execute "g/\\v^(\#)+.*" . fn . "$/call add(lnums, line('.'))"
+      if len(lnums) > 0
+        call cursor(lnums[0], 1)
+      else
+        call vimsidian#logger#Debug("g/\\v^(\#)+.*" . fn . "$/call add(lnums, line('.'))")
+      endif
+    endif
   endif
 endfunction
 
@@ -168,6 +219,33 @@ function! vimsidian#NewNote(dir)
     return
   endif
 
+  let fn = ""
+  if stridx(f, "#") !=# "-1"
+    if f[0] ==# "#"
+      let sf = split(f, "#")
+      if len(sf) > 0
+        let fn = sf[0]
+      endif
+      let f = fnamemodify(expand("%:r"), ":t")
+    else
+      let sf = split(f, "#")
+      if len(sf) > 0
+        let f = sf[0]
+      endif
+
+      if len(sf) > 1
+        let fn = sf[1]
+      endif
+    endif
+  endif
+
+  if stridx(f, "|") !=# "-1"
+    let sf = split(f, "|")
+    if len(sf) > 0
+      let f = sf[0]
+    endif
+  endif
+
   if empty(glob(a:dir))
     call vimsidian#logger#Info('No such directory ' . a:dir)
     return
@@ -179,6 +257,23 @@ function! vimsidian#NewNote(dir)
     execute 'e ' . note
   else
     execute 'e ' . note
+  endif
+
+  if !empty(fn)
+    let lnums = []
+    if fn[0] ==# "^"
+      silent! execute "g/" . escape(fn, '^') . "$/call add(lnums, line('.'))"
+      if len(lnums) > 0
+        call cursor(lnums[0], 1)
+      endif
+    else
+      silent! execute "g/\\v^(\#)+.*" . fn . "$/call add(lnums, line('.'))"
+      if len(lnums) > 0
+        call cursor(lnums[0], 1)
+      else
+        echo "g/\\v^(\#)+.*" . fn . "$/call add(lnums, line('.'))"
+      endif
+    endif
   endif
 endfunction
 
