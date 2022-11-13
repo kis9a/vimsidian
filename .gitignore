@@ -18,3 +18,7 @@ Sessionx.vim
 tags
 # Persistent undo
 [._]*.un~
+
+vim-vimlint
+vim-vimlparser
+vim-themis

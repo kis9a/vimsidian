@@ -11,15 +11,12 @@ function! vimsidian#CompleteNotes(findstart, base) abort
     let res = []
     let notes = []
 
-    if g:vimsidian_complete_paths_search_use_fd
-      let cmd = ['fd', '.']
-    else
-      let cmd = ['ls']
-    endif
-
     for f in g:vimsidian_complete_paths
-      call add(cmd, vimsidian#util#WrapWithSingleQuote(f)) 
-      let rs = vimsidian#action#System(cmd)
+      if g:vimsidian_complete_paths_search_use_fd
+        let rs = vimsidian#unit#Fd(vimsidian#util#WrapWithSingleQuote(f), [])
+      else
+        let rs = vimsidian#unit#Ls(vimsidian#util#WrapWithSingleQuote(f), [])
+      endif
 
       for n in split(rs, '\n')
         call add(notes, substitute(fnamemodify(n, ':t'),  '\v.md$', '', 'g'))
@@ -35,35 +32,53 @@ function! vimsidian#CompleteNotes(findstart, base) abort
   endif
 endfunction
 
-function! vimsidian#RgLinesWithMatches(word) abort
-  let cmd = ['rg', '-F', '-n', vimsidian#util#WrapWithSingleQuote(a:word), g:vimsidian_path]
-  let matches = vimsidian#action#System(cmd)
-  if empty (matches)
-    call vimsidian#logger#Info("Not found '" .a:word . "'")
+function! vimsidian#MatchesOpen(m) abort
+  if empty (a:m)
+    call vimsidian#logger#Debug('Matches empty' . vimsidian#util#WrapWithSingleQuote(a:m))
+    return
   else
-    call vimsidian#action#OpenQuickFix(matches)
+    call vimsidian#action#OpenQuickFix(a:m)
   endif
 endfunction
 
-function! vimsidian#RgNotesWithMatches(word) abort
-  let cmd = ['rg', '-F', '-n', vimsidian#util#WrapWithSingleQuote(a:word), '--files-with-matches', g:vimsidian_path]
-  let matches = vimsidian#action#System(cmd)
-  if empty (matches)
+function! vimsidian#RgNotesWithMatchesOpenCmd(word) abort
+  let m = vimsidian#unit#RgNotes(a:word)
+  if m ==# 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(a:word))
-  else
-    let matches = substitute(matches, '\v\n', ':1: \n', 'g')
-    call vimsidian#action#OpenQuickFix(matches)
+    return
   endif
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
+endfunction
+
+function! vimsidian#RgLinesWithMatchesOpenCmd(word) abort
+  let m = vimsidian#unit#RgLines(a:word)
+  if m ==# 1
+    call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(a:word))
+    return
+  endif
+  call vimsidian#MatchesOpen(m)
 endfunction
 
 function! vimsidian#RgNotesWithMatchesInteractive() abort
   let i = vimsidian#action#GetUserInput('VimsidianRgNotesWithMatchesInteractive')
-  call vimsidian#RgNotesWithMatches(i)
+  let m = vimsidian#unit#RgNotes(i)
+  if m ==# 1
+    call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(i))
+    return
+  endif
+
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
 endfunction
 
 function! vimsidian#RgLinesWithMatchesInteractive() abort
   let i = vimsidian#action#GetUserInput('VimsidianRgLinesWithMatchesInteractive')
-  call vimsidian#RgLinesWithMatches(i)
+  let m = vimsidian#unit#RgLines(i)
+  if m ==# 1
+    call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(i))
+    return
+  endif
+
+  call vimsidian#MatchesOpen(m)
 endfunction
 
 function! vimsidian#RgTagMatches() abort
@@ -72,29 +87,29 @@ function! vimsidian#RgTagMatches() abort
     call vimsidian#logger#Info('Word under the cursor is not a tag')
     return
   endif
-  call vimsidian#RgLinesWithMatches(tag)
+  let m = vimsidian#unit#RgLines(tag)
+  if m ==# 1
+    call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(tag))
+    return
+  endif
+
+  call vimsidian#MatchesOpen(m)
 endfunction
 
 function! vimsidian#FdLinkedNotesByThisNote() abort
   let links = vimsidian#unit#LinksInThisNote()
   if len(links) > 0
-    let grepArg = ''
-    for m in links
-      let grepArg .= ' -e ' . vimsidian#util#WrapWithSingleQuote('/' . m . '.md') " grep -e 'file' -e 'file2'
-    endfor
+    let m = vimsidian#unit#FdNotes(links)
   else
     call vimsidian#logger#Info('No link found in this note')
     return
   endif
 
-  let cmd = ['fd', '.', g:vimsidian_path, '|', 'grep', grepArg]
-  let matches = vimsidian#action#System(cmd)
-  if empty(matches)
+  if empty(m)
     call vimsidian#logger#Info('Linked notes not found')
     return
   else
-    let matches = substitute(matches, '\v\n', ':1: \n', 'g')
-    call vimsidian#action#OpenQuickFix(matches)
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
   endif
 endfunction
 
@@ -102,10 +117,20 @@ function! vimsidian#RgNotesLinkingThisNote() abort
   let fname = fnamemodify(expand('%:t'), ':r')
   let ext = expand('%:e')
   if ext ==# 'md'
-    call vimsidian#RgNotesWithMatches('[[' . fname . ']]')
+    let m = vimsidian#unit#RgNotes('[[' . fname . ']]')
+    if m ==# 1
+      call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote('[[' . fname . ']]'))
+      return
+    endif
   else
-    call vimsidian#RgNotesWithMatches('[[' . expand('%:t') . ']]')
+    let m = vimsidian#unit#RgNotes('[[' . expand('%:t') . ']]')
+    if m ==# 1
+      call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote('[[' . expand('%:t') . ']]'))
+      return
+    endif
   endif
+
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
 endfunction
 
 function! vimsidian#MoveToPreviousLink() abort
@@ -139,15 +164,14 @@ function! vimsidian#MoveToLink() abort
     endif
   endif
 
-  let cmd = ['fd', '.', g:vimsidian_path, '|', 'grep', vimsidian#util#WrapWithSingleQuote('/' . f . lex)]
-  let note = vimsidian#action#System(cmd)
-  let snote = split(note, '\n')
-  if len(snote) > 0
-    let note = snote[0]
+  let note = vimsidian#unit#FdNote(f . lex)
+  let m = split(note, '\n')
+  if len(m) > 0
+    let note = m[0]
   endif
 
   if empty(note)
-    call vimsidian#logger#Info('Linked note not found' . vimsidian#util#WrapWithSingleQuote(f . '.md'))
+    call vimsidian#logger#Info('Linked note not found' . vimsidian#util#WrapWithSingleQuote(f . lex))
     return
   else
     execute 'e ' . note

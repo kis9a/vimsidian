@@ -1,0 +1,54 @@
+name: test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  latest:
+    runs-on: ubuntu-latest
+    container: thinca/vim:latest-ubuntu
+    steps:
+      - run: |
+          vim --version
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Checkout vim-themis
+        uses: actions/checkout@v2
+        with:
+          repository: thinca/vim-themis
+          path: vim-themis
+
+      - name: Checkout vimlint
+        uses: actions/checkout@v2
+        with:
+          repository: syngan/vim-vimlint
+          path: vim-vimlint
+
+      - name: Checkout vimlparser
+        uses: actions/checkout@v2
+        with:
+          repository: ynkdir/vim-vimlparser
+          path: vim-vimlparser
+
+      - name: Install commands
+        run: |
+          apt-get update
+          apt-get install make
+          apt-get install ripgrep
+          apt-get install fd-find
+          ln -s "$(which fdfind)" "$(dirname $(which fdfind))/fd"
+
+      - name: Lint
+        run: |
+          make lint
+
+      - name: Test
+        run: |
+          make test
