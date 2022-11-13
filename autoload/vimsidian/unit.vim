@@ -1,3 +1,63 @@
+function! vimsidian#unit#Rg(word, opts) abort
+  let cmd = ['rg', '-F', '-n', vimsidian#util#WrapWithSingleQuote(a:word), g:vimsidian_path] + a:opts
+  return vimsidian#action#System(cmd)
+endfunction
+
+function! vimsidian#unit#RgNotes(word) abort
+  let m = vimsidian#unit#Rg(a:word, ['--files-with-matches'])
+  if empty (m)
+    return 1
+  else
+    return m
+  endif
+endfunction
+
+function! vimsidian#unit#RgLines(word) abort
+  let m = vimsidian#unit#Rg(a:word, [])
+  if empty (m)
+    return 1
+  else
+    return m
+  endif
+endfunction
+
+function! vimsidian#unit#Fd(path, opts) abort
+  let cmd = ['fd', '.', a:path] + a:opts
+  return vimsidian#action#System(cmd)
+endfunction
+
+function! vimsidian#unit#FdNote(note) abort
+  let m = vimsidian#unit#Fd(g:vimsidian_path, ['|', 'grep', vimsidian#util#WrapWithSingleQuote('/' . a:note)])
+  if empty (m)
+    return 1
+  else
+    return m
+  endif
+endfunction
+
+function! vimsidian#unit#FdNotes(notes) abort
+  let grepArg = ''
+  for n in a:notes
+    let grepArg .= ' -e ' . vimsidian#util#WrapWithSingleQuote('/' . n . '.md') " grep -e 'file' -e 'file2'
+  endfor
+
+  let m = vimsidian#unit#Fd(g:vimsidian_path, ['|', 'grep', grepArg])
+  if empty (m)
+    return 1
+  else
+    return m
+  endif
+endfunction
+
+function! vimsidian#unit#AppendNumberToLineForList(m) abort
+  return substitute(a:m, '\v\n', ':1: \n', 'g')
+endfunction
+
+function! vimsidian#unit#Ls(path, opts) abort
+  let cmd = ['ls', a:path] + a:opts
+  return vimsidian#action#System(cmd)
+endfunction
+
 function! vimsidian#unit#TrimLinkToken(str) abort
   return substitute(a:str, '\v([|\])', '', 'g')
 endfunction
@@ -5,7 +65,12 @@ endfunction
 function! vimsidian#unit#CursorTag() abort
   let cword = expand('<cWORD>')
   if cword[0] ==# '#'
-    return cword
+    let m = matchstr(cword, '\v#(\w)+')
+    if m ==# ''
+      return 1
+    else
+      return cword
+    endif
   else
     return 1
   endif

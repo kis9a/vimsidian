@@ -7,6 +7,10 @@ if exists('g:loaded_vimsidian_plugin') && g:loaded_vimsidian_plugin
   finish
 endif
 
+if !empty($VIMSIDIAN_TEST_PATH)
+  let g:vimsidian_path = $VIMSIDIAN_TEST_PATH
+endif
+
 if !exists('g:vimsidian_path')
   echoerr '[VIMSIDIAN] Required g:vimsidian_path variable'
   finish
@@ -77,8 +81,8 @@ if g:vimsidian_check_required_commands_executable
 endif
 
 " commands
-command! -nargs=1 VimsidianRgNotesWithMatches call vimsidian#RgNotesWithMatches(<q-args>)
-command! -nargs=1 VimsidianRgLinesWithMatches call vimsidian#RgLinesWithMatches(<q-args>)
+command! -nargs=1 VimsidianRgNotesWithMatches call vimsidian#RgNotesWithMatchesCmd(<q-args>)
+command! -nargs=1 VimsidianRgLinesWithMatches call vimsidian#RgLinesWithMatchesCmd(<q-args>)
 command! VimsidianRgNotesWithMatchesInteractive call vimsidian#RgNotesWithMatchesInteractive()
 command! VimsidianRgLinesWithMatchesInteractive call vimsidian#RgLinesWithMatchesInteractive()
 command! VimsidianRgNotesLinkingThisNote call vimsidian#RgNotesLinkingThisNote()

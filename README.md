@@ -1,6 +1,8 @@
 # vimsidian
 
-Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Highlight, Complement, Searching and open links and tags. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
+![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)
+
+Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, backlink resolution and jumps, search and completion and highlighting, daily notes. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
 
 This plugin was made for me, but I hope it will be useful for those who want to easily edit [Obsidian](https://obsidian.md/) notes with vim as I do. If you have trouble using it, please post an [issues](https://github.com/kis9a/vimsidian/issues) below. Contributions, edits and distribution are also welcome. I also shared on the obsdiain forum. [forum.obsidian.md - 46385](https://forum.obsidian.md/t/vimsidian-vim-plugin-to-help-edit-obsidian-notes-in-vim/46385)
 
@@ -49,7 +51,7 @@ Use your favorite plugin manager
 Plug "kis9a/vimsidian"
 ```
 
-## Configuration (e.g.)
+## Configuration
 
 #### • Minimal
 
@@ -199,6 +201,24 @@ endfunction
 
 ```vim
 :h vimsidian
+```
+
+## Developments
+
+### Linting
+
+```console
+make init
+make lint
+make vint-int
+make lint-vint
+```
+
+### Testing
+
+```console
+make init
+make test
 ```
 
 ## LICENSE

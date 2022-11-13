@@ -20,8 +20,8 @@ CONTENTS                                                 *vimsidian-contents*
 ==============================================================================
 INTRODUCTION                                         *vimsidian-introduction*
 
-Vim plugin to help edit obsidian notes in Vim. Highlight, Complement,
-Searching and open links and tags.
+Vim plugin to help edit obsidian notes in Vim. Links, backlink resolution
+and jumps, search and completion and highlighting
 
 Even if you don't use obsidian, you can use it to manage your notes locally.
 This plugin was made for me, but I hope it will be useful for those who
@@ -46,6 +46,7 @@ VARIABLES                                               *vimsidian-variables*
 
 All variable:
   |$VIMSIDIAN_PATH_PATTERN|
+  |$VIMSIDIAN_TEST_PATH|
 
 ------------------------------------------------------------------------------
                                                    *vimsidian_path_pattern*
@@ -55,6 +56,13 @@ All variable:
 
 The |$VIMSIDIAN_PATH_PATTERN| is the autocmd path-pattern (:h autocmd-pattern)
 
+------------------------------------------------------------------------------
+                                                     *vimsidian_test_path*
+  |$VIMSIDIAN_PATH_PATTERN|
+
+  let $VIMSIDIAN_TEST_PATH = |g:vimsidian_path| . "/*.md"
+
+|$VIMSIDIAN_TEST_PATH| is used to initialize |g:vimsidian_path| at test run time
 
 ==============================================================================
 OPTIONS                                                   *vimsidian-options*
