@@ -7,7 +7,7 @@ function! vimsidian#action#GetUserInput(label) abort
   let curline = getline('.')
   echohl VimsidianPromptColor
   call inputsave()
-  let input=input(a:label . " > ")
+  let input=input(a:label . ' > ')
   echohl NONE
   call inputrestore()
   call setline('.', curline)
@@ -19,5 +19,5 @@ function! vimsidian#action#WriteFile(s, f, m) abort
 endfunction
 
 function! vimsidian#action#System(cmd) abort
-  return system(join(a:cmd, " "))
+  return system(join(a:cmd, ' '))
 endfunction

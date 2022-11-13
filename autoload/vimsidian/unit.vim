@@ -4,7 +4,7 @@ endfunction
 
 function! vimsidian#unit#CursorTag() abort
   let cword = expand('<cWORD>')
-  if cword[0] ==# "#"
+  if cword[0] ==# '#'
     return cword
   else
     return 1
@@ -13,7 +13,7 @@ endfunction
 
 function! vimsidian#unit#LinksInThisNote() abort
   let cmd = []
-  if stridx(system("grep --version"), "BSD") == "-1"
+  if stridx(system('grep --version'), 'BSD') ==# '-1'
     call add(cmd, 'grep -oP') " Use GNU grep option
   else
     call add(cmd, 'grep -oE') " Use BSD grep option
@@ -30,7 +30,7 @@ function! vimsidian#unit#LinksInThisNote() abort
     let valid = 1
 
     for ilc in g:vimsidian_internal_link_chars
-      if stridx(new_link, ilc) !=# "-1"
+      if stridx(new_link, ilc) !=# '-1'
         if new_link[0] ==# ilc
           let valid = 0
         endif
@@ -111,6 +111,80 @@ function! vimsidian#unit#CursorLink() abort
   endif
 
   return f
+endfunction
+
+function! vimsidian#unit#InternalLinkPosition(fn) abort
+  let cln = line('.')
+
+  if !empty(a:fn)
+    let lnums = []
+    if a:fn[0] ==# '^'
+      silent! execute 'g/' . escape(a:fn, '^') . '$/call add(lnums, line("."))'
+      if len(lnums) > 0
+        return [lnums[0], 1]
+      else
+        call vimsidian#logger#Debug('g/' . escape(a:fn, '^') . '$/call add(lnums, line("."))')
+        return [cln, 1]
+      endif
+    else
+      silent! execute 'g/\v^(\#)+.*' . a:fn . '$/call add(lnums, line("."))'
+      if len(lnums) > 0
+        return [lnums[0], 1]
+      else
+        call vimsidian#logger#Debug('g/\v^(\#)+.*' . a:fn . '$/call add(lnums, line("."))')
+        return [cln, 1]
+      endif
+    endif
+  else
+    return [cln, 1]
+  endif
+endfunction
+
+function! vimsidian#unit#LinkSetToMove(f) abort
+  let note = a:f
+  let block = ''
+
+  if stridx(note, '#') !=# '-1'
+    if note[0] ==# '#'
+      let sf = split(note, '#')
+      if len(sf) > 0
+        let block = sf[0]
+      endif
+      let note = fnamemodify(expand('%:r'), ':t')
+    else
+      let sf = split(note, '#')
+      if len(sf) > 0
+        let note = sf[0]
+      endif
+
+      if len(sf) > 1
+        let block = sf[1]
+      endif
+    endif
+  endif
+
+  if stridx(note, '|') !=# '-1'
+    let sf = split(note, '|')
+    if len(sf) > 0
+      let note = sf[0]
+    endif
+  endif
+
+  return [note, block]
+endfunction
+
+function! vimsidian#unit#LinkExtension(f) abort
+  let lex = '.md'
+  if stridx(a:f, '.') !=# '-1'
+    let fe = fnamemodify(a:f, ':e')
+    for me in g:vimsidian_media_extensions
+      if me ==# fe
+        let lex = ''
+      endif
+    endfor
+  endif
+
+  return lex
 endfunction
 
 function! vimsidian#unit#PreviousLinkPosition() abort

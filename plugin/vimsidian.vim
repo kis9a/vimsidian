@@ -19,7 +19,7 @@ endif
 
 " set global options
 if empty($VIMSIDIAN_PATH_PATTERN)
-  let $VIMSIDIAN_PATH_PATTERN = g:vimsidian_path . "/*.md"
+  let $VIMSIDIAN_PATH_PATTERN = g:vimsidian_path . '/*.md'
 endif
 
 if !exists('g:vimsidian_log_level')
@@ -55,7 +55,7 @@ if !exists('g:vimsidian_check_required_commands_executable')
 endif
 
 if !exists('g:vimsidian_media_extensions')
-  let g:vimsidian_media_extensions = ["png", "jpg", "jpeg", "gif", "bmp", "svg", "mp3", "webm", "wav", "m4a", "ogg", "3gp", "flac", "mp4", "webm", "ogv", "mov", "mkv", "pdf"]
+  let g:vimsidian_media_extensions = ['png', 'jpg', 'jpeg', 'gif', 'bmp', 'svg', 'mp3', 'webm', 'wav', 'm4a', 'ogg', '3gp', 'flac', 'mp4', 'webm', 'ogv', 'mov', 'mkv', 'pdf']
 endif
 
 if !exists('g:vimsidian_unsuitable_link_chars')

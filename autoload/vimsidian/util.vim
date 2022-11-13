@@ -39,3 +39,7 @@ endfunction
 function! vimsidian#util#ReverseString(str) abort
   return join(reverse(split(a:str, '\zs')), '')
 endfunction
+
+function! vimsidian#util#WrapWithSingleQuote(str) abort
+  return "'" . a:str . "'"
+endfunction
