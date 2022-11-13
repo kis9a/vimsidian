@@ -58,9 +58,7 @@ The |$VIMSIDIAN_PATH_PATTERN| is the autocmd path-pattern (:h autocmd-pattern)
 
 ------------------------------------------------------------------------------
                                                      *vimsidian_test_path*
-  |$VIMSIDIAN_PATH_PATTERN|
-
-  let $VIMSIDIAN_TEST_PATH = |g:vimsidian_path| . "/*.md"
+  |$VIMSIDIAN_TEST_PATH|
 
 |$VIMSIDIAN_TEST_PATH| is used to initialize |g:vimsidian_path| at test run time
 
