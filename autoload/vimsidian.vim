@@ -61,6 +61,10 @@ endfunction
 
 function! vimsidian#RgNotesWithMatchesInteractive() abort
   let i = vimsidian#action#GetUserInput('VimsidianRgNotesWithMatchesInteractive')
+  if empty(i)
+    call vimsidian#logger#Debug('Empty input')
+    return
+  endif
   let m = vimsidian#unit#RgNotes(i)
   if m ==# 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(i))
@@ -72,6 +76,10 @@ endfunction
 
 function! vimsidian#RgLinesWithMatchesInteractive() abort
   let i = vimsidian#action#GetUserInput('VimsidianRgLinesWithMatchesInteractive')
+  if empty(i)
+    call vimsidian#logger#Debug('Empty input')
+    return
+  endif
   let m = vimsidian#unit#RgLines(i)
   if m ==# 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(i))
@@ -174,7 +182,7 @@ function! vimsidian#MoveToLink() abort
     call vimsidian#logger#Info('Linked note not found' . vimsidian#util#WrapWithSingleQuote(f . lex))
     return
   else
-    execute 'e ' . note
+    execute 'e! ' . note
   endif
 
   let [line, col] = vimsidian#unit#InternalLinkPosition(fn)
@@ -203,9 +211,9 @@ function! vimsidian#NewNote(dir) abort
   let note = fnamemodify(a:dir, ':p') . f . '.md'
   if !empty(glob(note))
     call vimsidian#logger#Info('Already exists ' . note)
-    execute 'e ' . note
+    execute 'e! ' . note
   else
-    execute 'e ' . note
+    execute 'e! ' . note
   endif
 
   let [line, col] = vimsidian#unit#InternalLinkPosition(fn)
@@ -214,7 +222,7 @@ endfunction
 
 function! vimsidian#FormatLink() abort
   let file = expand('%:p')
-  let s = join(readfile(file), '\n')
+  let s = join(readfile(file), "\n")
   let s = vimsidian#unit#FormatLinkString(s)
   call vimsidian#action#WriteFile(split(s, '\n'), file, 'b')
   execute 'e!'
