@@ -96,6 +96,7 @@ command! VimsidianMoveToLink call vimsidian#MoveToLink()
 command! VimsidianMoveToNextLink call vimsidian#MoveToNextLink()
 command! VimsidianMoveToPreviousLink call vimsidian#MoveToPreviousLink()
 command! -nargs=1 VimsidianNewNote call vimsidian#NewNote(<q-args>)
+command! VimsidianNewNoteInteractive call vimsidian#NewNoteInteractive()
 command! VimsidianFormatLink call vimsidian#FormatLink()
 
 " augroup

@@ -220,6 +220,33 @@ function! vimsidian#NewNote(dir) abort
   call cursor(line, col)
 endfunction
 
+function! vimsidian#NewNoteInteractive() abort
+  let f = vimsidian#action#GetUserInput('VimsidianNewNoteInterfactive: g:vimsidian_path/')
+  if empty(f)
+    call vimsidian#logger#Debug('Empty input')
+    return
+  endif
+
+  let note = fnamemodify(g:vimsidian_path, ':p') . f . '.md'
+  let b = fnamemodify(note, ':h')
+  if empty(glob(b))
+    call vimsidian#logger#Debug('Base directory not found ' . note)
+    let d = vimsidian#action#GetUserInput('Create a directory ? ' . vimsidian#util#WrapWithSingleQuote(b) . ' [y/n]')
+    if d !=# 'y'
+      return
+    else
+      call vimsidian#action#MkdirP(b)
+      call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
+    endif
+  else
+    if !empty(glob(note))
+      call vimsidian#logger#Info('Already exists ' . note)
+    else
+      call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
+    endif
+  endif
+endfunction
+
 function! vimsidian#FormatLink() abort
   let file = expand('%:p')
   let s = join(readfile(file), "\n")

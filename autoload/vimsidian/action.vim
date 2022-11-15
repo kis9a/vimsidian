@@ -25,3 +25,7 @@ endfunction
 function! vimsidian#action#System(cmd) abort
   return system(join(a:cmd, ' '))
 endfunction
+
+function! vimsidian#action#MkdirP(f) abort
+  return system(join(['mkdir -p', a:f], ' '))
+endfunction

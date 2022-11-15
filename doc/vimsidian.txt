@@ -203,6 +203,7 @@ All commands:
   |:VimsidianMoveToPreviousLink|
   |:VimsidianMoveToNextLink|
   |:VimsidianNewNote|
+  |:VimsidianNewNoteInterfactive|
   |:VimsidianFormatLink|
 
 ------------------------------------------------------------------------------
@@ -284,10 +285,17 @@ Go to link before current cursor
 ------------------------------------------------------------------------------
                                                          *vimsidian_new_note*
 
-  |:VimsidianNewNote `[directory]`
+  |:VimsidianNewNote| `[directory]`
 
 Creates a note with the name of the link under the cursor in a `directory`
 with the name of the argument
+
+------------------------------------------------------------------------------
+                                           *vimsidian_new_note_interfactive*
+
+  |:VimsidianNewNoteInterfactive| `[directory]`
+
+Creates a new note at the location entered by the user
 
 ------------------------------------------------------------------------------
                                                     *vimsidian_format_link*
