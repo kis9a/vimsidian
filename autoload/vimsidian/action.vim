@@ -14,6 +14,10 @@ function! vimsidian#action#GetUserInput(label) abort
   return input
 endfunction
 
+function! vimsidian#action#OpenFile(opener, file) abort
+  execute join([a:opener,  a:file], ' ')
+endfunction
+
 function! vimsidian#action#WriteFile(s, f, m) abort
   call writefile(a:s, a:f, a:m)
 endfunction

@@ -50,6 +50,10 @@ if !exists('g:vimsidian_complete_paths_search_use_fd')
   let g:vimsidian_complete_paths_search_use_fd = 1 " 0: ls, 1: fd
 endif
 
+if !exists('g:vimsidian_link_open_mode')
+  let g:vimsidian_link_open_mode = 'e!'
+endif
+
 if !exists('g:vimsidian_required_commands')
   let g:vimsidian_required_commands = ['rg', 'fd', 'grep']
 endif

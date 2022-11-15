@@ -72,6 +72,7 @@ All options:
   |g:vimsidian_enable_syntax_highlight|
   |g:vimsidian_enable_complete_functions|
   |g:vimsidian_complete_paths_search_use_fd|
+  |g:vimsidian_link_open_mode|
   |g:vimsidian_color_definition_use_default|
   |g:vimsidian_check_required_commands_executable|
   |g:vimsidian_complete_paths|
@@ -126,6 +127,13 @@ enabled by default
 
 Whether to search files under g:vimsidian_complete_paths using fd,
 use ls when 0
+
+------------------------------------------------------------------------------
+                                              *g:vimsidian_link_open_mode*
+
+  let g:vimsidian_link_open_mode = 'e!'
+
+Change the way the buffer opens when opening a new note
 
 ------------------------------------------------------------------------------
                                 *g:vimsidian_color_definition_use_default*

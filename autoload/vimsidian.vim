@@ -182,7 +182,7 @@ function! vimsidian#MoveToLink() abort
     call vimsidian#logger#Info('Linked note not found' . vimsidian#util#WrapWithSingleQuote(f . lex))
     return
   else
-    execute 'e! ' . note
+    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
   endif
 
   let [line, col] = vimsidian#unit#InternalLinkPosition(fn)
@@ -211,9 +211,9 @@ function! vimsidian#NewNote(dir) abort
   let note = fnamemodify(a:dir, ':p') . f . '.md'
   if !empty(glob(note))
     call vimsidian#logger#Info('Already exists ' . note)
-    execute 'e! ' . note
+    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
   else
-    execute 'e! ' . note
+    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
   endif
 
   let [line, col] = vimsidian#unit#InternalLinkPosition(fn)
@@ -225,5 +225,5 @@ function! vimsidian#FormatLink() abort
   let s = join(readfile(file), "\n")
   let s = vimsidian#unit#FormatLinkString(s)
   call vimsidian#action#WriteFile(split(s, '\n'), file, 'b')
-  execute 'e!'
+  call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, file)
 endfunction

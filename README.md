@@ -114,6 +114,30 @@ augroup vimsidian_augroup
 </details>
 <!--}}}-->
 
+<!--{{{ Change link open mode -->
+<details close>
+<summary>Change link open mode</summary>
+<br/>
+
+Change the way the buffer opens when opening a new note.
+
+```vim
+" default
+let g:vimsidian_link_open_mode = 'e!'
+
+" newtab
+let g:vimsidian_link_open_mode = 'newtab'
+
+" vsplit
+let g:vimsidian_link_open_mode = 'vnew'
+
+" hsplit
+let g:vimsidian_link_open_mode = 'new'
+```
+
+</details>
+<!--}}}-->
+
 <!--{{{ Define the colors yourself -->
 <details close>
 <summary>Define the colors yourself</summary>
