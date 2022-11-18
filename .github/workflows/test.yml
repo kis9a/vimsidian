@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  latest:
+  linux-latest:
     runs-on: ubuntu-latest
     container: thinca/vim:latest-ubuntu
     steps:
@@ -48,6 +48,48 @@ jobs:
       - name: Lint
         run: |
           make lint
+
+      - name: Test
+        run: |
+          make test
+
+  macos-latest:
+    runs-on: macos-latest
+    steps:
+      - run: |
+          vim --version
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Checkout vim-themis
+        uses: actions/checkout@v2
+        with:
+          repository: thinca/vim-themis
+          path: vim-themis
+
+      - name: Checkout vimlint
+        uses: actions/checkout@v2
+        with:
+          repository: syngan/vim-vimlint
+          path: vim-vimlint
+
+      - name: Checkout vimlparser
+        uses: actions/checkout@v2
+        with:
+          repository: ynkdir/vim-vimlparser
+          path: vim-vimlparser
+
+      - name: Install commands
+        run: |
+          brew install coreutils
+          brew install make
+          brew install ripgrep
+          brew install fd
+
+      - name: Lint
+        run: |
+          make --ignore-errors lint
 
       - name: Test
         run: |

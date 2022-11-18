@@ -15,7 +15,7 @@ linter: ## clone linter
 	git clone https://github.com/syngan/vim-vimlint
 
 lint: ## linting with vimlint
-	./vim-vimlint/bin/vimlint.sh -l ./vim-vimlint -p ./vim-vimlparser -e EVL102.l:_=1 -c func_abort=1 autoload plugin test
+	./vim-vimlint/bin/vimlint.sh -l ./vim-vimlint -p ./vim-vimlparser -e EVL102.l:_=1 -c func_abort=1 autoload plugin test 2>&1
 
 lint-vint: check-vint ## linting with vint
 	vint plugin autoload test
