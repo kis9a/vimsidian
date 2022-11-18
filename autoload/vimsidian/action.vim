@@ -1,5 +1,5 @@
-function! vimsidian#action#OpenQuickFix(lst) abort
-  execute 'lcd' g:vimsidian_path
+function! vimsidian#action#OpenQuickFix(lst, base) abort
+  execute 'lcd' a:base
   cexpr a:lst | copen
 endfunction
 
@@ -28,4 +28,8 @@ endfunction
 
 function! vimsidian#action#MkdirP(f) abort
   return system(join(['mkdir -p', a:f], ' '))
+endfunction
+
+function! vimsidian#action#ReadFile(f) abort
+  return readfile(a:f)
 endfunction

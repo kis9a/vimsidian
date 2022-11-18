@@ -43,3 +43,12 @@ endfunction
 function! vimsidian#util#WrapWithSingleQuote(str) abort
   return "'" . a:str . "'"
 endfunction
+
+function! vimsidian#util#PathJoin(...) abort
+  let path = ''
+  for part in a:000
+    let path .= '/' . (type(part) is type([]) ? call('vimsidian#util#PathJoin', part) :part)
+    unlet part
+  endfor
+  return substitute(path[1 :], (exists('+shellslash') ? '[\\/]' : '/') . '\+', '/', 'g')
+endfunction

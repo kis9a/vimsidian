@@ -72,6 +72,8 @@ All options:
   |g:vimsidian_enable_syntax_highlight|
   |g:vimsidian_enable_complete_functions|
   |g:vimsidian_complete_paths_search_use_fd|
+  |g:vimsidian_daily_note_path|
+  |g:vimsidian_daily_note_template_path|
   |g:vimsidian_link_open_mode|
   |g:vimsidian_color_definition_use_default|
   |g:vimsidian_check_required_commands_executable|
@@ -134,6 +136,33 @@ use ls when 0
   let g:vimsidian_link_open_mode = 'e!'
 
 Change the way the buffer opens when opening a new note
+
+------------------------------------------------------------------------------
+                                              *g:vimsidian_daily_note_path*
+
+  let g:vimsidian_daily_note_path = g:vimsidian_path
+
+Path to create daily note
+
+------------------------------------------------------------------------------
+                                      *g:vimsidian_daily_note_template_path*
+
+  let g:vimsidian_daily_note_template_path = g:vimsidian_daily_note_path
+
+Path of the daily note template. Some parameters described in the template 
+file can be converted. Available parameters are listed below.
+
+  let now = localtime()
+  let aday = (60 * 60 * 24)
+
+Parameters: 
+  {{date}}: strftime(g:vimsidian_daily_note_date_format)
+  {{day}}: strftime("%d", now)
+  {{month}}: strftime("%m", now)
+  {{year}}: strftime("%Y", now)
+  {{previous_date}}: strftime(g:vimsidian_daily_note_date_format, now - aday)
+  {{next_date}}: strftime(g:vimsidian_daily_note_date_format, now + aday)
+  {{day_of_week}}: strftime("%A", now)
 
 ------------------------------------------------------------------------------
                                 *g:vimsidian_color_definition_use_default*
@@ -204,6 +233,7 @@ All commands:
   |:VimsidianMoveToNextLink|
   |:VimsidianNewNote|
   |:VimsidianNewNoteInterfactive|
+  |:VimsidianDailyNote|
   |:VimsidianFormatLink|
 
 ------------------------------------------------------------------------------
@@ -296,6 +326,14 @@ with the name of the argument
   |:VimsidianNewNoteInterfactive| `[directory]`
 
 Creates a new note at the location entered by the user
+
+------------------------------------------------------------------------------
+                                                      *vimsidian_daily_note*
+
+  |:VimsidianDailyNote|
+
+Create a new daily note based on |g:vimsidian_daily_note_template_path|
+in |g:vimsidian_daily_note_path|. If the note already exists, open it.
 
 ------------------------------------------------------------------------------
                                                     *vimsidian_format_link*

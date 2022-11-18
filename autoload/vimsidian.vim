@@ -37,7 +37,7 @@ function! vimsidian#MatchesOpen(m) abort
     call vimsidian#logger#Debug('Matches empty' . vimsidian#util#WrapWithSingleQuote(a:m))
     return
   else
-    call vimsidian#action#OpenQuickFix(a:m)
+    call vimsidian#action#OpenQuickFix(a:m, g:vimsidian_path)
   endif
 endfunction
 
@@ -154,6 +154,7 @@ endfunction
 function! vimsidian#MoveToLink() abort
   let f = vimsidian#unit#CursorLink()
   if f ==# 1
+    call vimsidian#logger#Debug('Empty cursor link')
     return
   endif
 
@@ -173,6 +174,11 @@ function! vimsidian#MoveToLink() abort
   endif
 
   let note = vimsidian#unit#FdNote(f . lex)
+  if note ==# 1
+    call vimsidian#logger#Debug('Empty note ' . vimsidian#util#WrapWithSingleQuote(f))
+    return
+  endif
+
   let m = split(note, '\n')
   if len(m) > 0
     let note = m[0]
@@ -208,7 +214,7 @@ function! vimsidian#NewNote(dir) abort
     return
   endif
 
-  let note = fnamemodify(a:dir, ':p') . f . '.md'
+  let note = vimsidian#util#PathJoin(fnamemodify(a:dir, ':p'), f . '.md')
   if !empty(glob(note))
     call vimsidian#logger#Info('Already exists ' . note)
     call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
@@ -227,7 +233,7 @@ function! vimsidian#NewNoteInteractive() abort
     return
   endif
 
-  let note = fnamemodify(g:vimsidian_path, ':p') . f . '.md'
+  let note = vimsidian#util#PathJoin(fnamemodify(g:vimsidian_path, ':p'), f . '.md')
   let b = fnamemodify(note, ':h')
   if empty(glob(b))
     call vimsidian#logger#Debug('Base directory not found ' . note)
@@ -247,9 +253,39 @@ function! vimsidian#NewNoteInteractive() abort
   endif
 endfunction
 
+function! vimsidian#DailyNote() abort
+  if empty(glob(g:vimsidian_daily_note_path)) || !isdirectory(glob(g:vimsidian_daily_note_path))
+    call vimsidian#logger#Info('No such directory ' . g:vimsidian_daily_note_path)
+    return
+  endif
+
+  let date = strftime(g:vimsidian_daily_note_date_format)
+  if empty(date)
+    call vimsidian#logger#Info('Empty strftime date format')
+    return
+  endif
+
+  let dnote = vimsidian#util#PathJoin(g:vimsidian_daily_note_path, date . '.md')
+
+  if empty(glob(g:vimsidian_daily_note_template_path))
+    if empty(glob(dnote))
+      let s = vimsidian#unit#DailyNoteReplaceParametrizedString("[[{{date}}]]\n\n< [[{{previous_date}}]] | [[{{next_date}}]] >\n\n")
+      call vimsidian#action#WriteFile(split(s, "\n"), dnote, 'b')
+    endif
+    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, dnote)
+  else
+    if empty(glob(dnote))
+      let r = join(vimsidian#action#ReadFile(g:vimsidian_daily_note_template_path), "\n")
+      let r = vimsidian#unit#DailyNoteReplaceParametrizedString(r)
+      call vimsidian#action#WriteFile(split(r, "\n"), dnote, 'b')
+    endif
+    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, dnote)
+  endif
+endfunction
+
 function! vimsidian#FormatLink() abort
   let file = expand('%:p')
-  let s = join(readfile(file), "\n")
+  let s = join(vimsidian#action#ReadFile(file), "\n")
   let s = vimsidian#unit#FormatLinkString(s)
   call vimsidian#action#WriteFile(split(s, '\n'), file, 'b')
   call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, file)

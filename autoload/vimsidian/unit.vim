@@ -85,7 +85,7 @@ function! vimsidian#unit#LinksInThisNote() abort
   endif
 
   let absolutePath=expand('%:p')
-  call add(cmd,  " '\\[\\[.*?\\]]' '" . absolutePath . "'")
+  call add(cmd,  " '\\[\\[.*?\\]]' " . vimsidian#util#WrapWithSingleQuote(absolutePath))
   let links = vimsidian#action#System(cmd)
   let links = split(links, '\n')
 
@@ -350,6 +350,26 @@ function! vimsidian#unit#NextLinkPosition() abort
       endif
     endif
   endif
+endfunction
+
+function! vimsidian#unit#DailyNoteReplaceParametrizedString(s) abort
+  let now = localtime()
+  let aday = (60 * 60 * 24)
+  let day = strftime('%d', now)
+  let month = strftime('%m', now)
+  let year = strftime('%Y', now)
+  let day_of_week = strftime('%A', now)
+  let date = strftime(g:vimsidian_daily_note_date_format)
+  let ndate = strftime(g:vimsidian_daily_note_date_format, now + aday)
+  let pdate = strftime(g:vimsidian_daily_note_date_format, now - aday)
+  let s = substitute(a:s, '{{date}}', date, 'g')
+  let s = substitute(s, '{{day}}', day, 'g')
+  let s = substitute(s, '{{month}}', month, 'g')
+  let s = substitute(s, '{{year}}', year, 'g')
+  let s = substitute(s, '{{previous_date}}', pdate, 'g')
+  let s = substitute(s, '{{next_date}}', ndate, 'g')
+  let s = substitute(s, '{{day_of_week}}', day_of_week, 'g')
+  return s
 endfunction
 
 function! vimsidian#unit#FormatLinkString(s) abort

@@ -31,6 +31,7 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 - Default syntax highlighting settings.
 - Custom formatting of link spacing.
 - Manage multiple `g:vimsidian_path` (Obsidian Vault).
+- Daily note feature.
 - Fewer dependencies.
 
 ## Initialization
@@ -77,6 +78,7 @@ augroup vimsidian_augroup
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sj :VimsidianMoveToNextLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sO :VimsidianNewNoteInteractive<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sd :VimsidianDailyNote<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sf :VimsidianFormatLink<CR>
 augroup END
 ```
@@ -153,6 +155,29 @@ hi! def VimsidianLinkHeader term=NONE ctermfg=142 guifg=#b8bb26
 hi! def VimsidianLinkBlock term=NONE ctermfg=142 guifg=#b8bb26
 hi! def VimsidianTagColor term=NONE ctermfg=109 guifg=#076678
 hi! def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
+```
+
+</details>
+<!--}}}-->
+
+<!--{{{ Custom daily note template -->
+<details close>
+<summary>Custom daily note template</summary>
+<br/>
+
+```vim
+let g:vimsidian_daily_note_path = g:vimsidian_path . "/daily/" . strftime("%Y-%m")
+let g:vimsidian_daily_note_template_path = g:vimsidian_path . "/daily/Daily template.md"
+```
+
+The template file can use some parameters. (:h g:vimsidian_daily_note_template_path)
+
+```
+[[{{date}}]]
+
+< [[{{previous_date}}]] | [[{{next_date}}]] >
+
+[[{{year}}-{{month}}]] [[{{day}}]] [[{{day_of_week}}]]
 ```
 
 </details>

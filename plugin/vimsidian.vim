@@ -16,9 +16,11 @@ if !exists('g:vimsidian_path')
   finish
 endif
 
-if empty(glob(g:vimsidian_path))
+if empty(glob(g:vimsidian_path)) || !isdirectory(glob(g:vimsidian_path))
   echoerr "[VIMSIDIAN] No such directory g:vimsidian_path '" . g:vimsidian_path . "'"
   finish
+else
+  let g:vimsidian_path = glob(g:vimsidian_path)
 endif
 
 " set global options
@@ -48,6 +50,22 @@ endif
 
 if !exists('g:vimsidian_complete_paths_search_use_fd')
   let g:vimsidian_complete_paths_search_use_fd = 1 " 0: ls, 1: fd
+endif
+
+if !exists('g:vimsidian_daily_note_path')
+  let g:vimsidian_daily_note_path = g:vimsidian_path
+else
+  let g:vimsidian_daily_note_path = glob(g:vimsidian_daily_note_path)
+endif
+
+if !exists('g:vimsidian_daily_note_template_path')
+  let g:vimsidian_daily_note_template_path = glob(g:vimsidian_daily_note_path) . '/template.md'
+else
+  let g:vimsidian_daily_note_template_path = glob(g:vimsidian_daily_note_template_path)
+endif
+
+if !exists('g:vimsidian_daily_note_date_format')
+  let g:vimsidian_daily_note_date_format = '%Y-%m-%d'
 endif
 
 if !exists('g:vimsidian_link_open_mode')
@@ -97,6 +115,7 @@ command! VimsidianMoveToNextLink call vimsidian#MoveToNextLink()
 command! VimsidianMoveToPreviousLink call vimsidian#MoveToPreviousLink()
 command! -nargs=1 VimsidianNewNote call vimsidian#NewNote(<q-args>)
 command! VimsidianNewNoteInteractive call vimsidian#NewNoteInteractive()
+command! VimsidianDailyNote call vimsidian#DailyNote()
 command! VimsidianFormatLink call vimsidian#FormatLink()
 
 " augroup
