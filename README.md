@@ -1,6 +1,6 @@
 # vimsidian
 
-![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)&nbsp;&nbsp;&nbsp;<image height="18px" src="https://www.vim.org/images/vim_shortcut.ico"></image>&nbsp;<image height="20px" src="https://obsidian.md/favicon.ico"></image></span>
+![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)&nbsp;&nbsp;<image height="18px" src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"></image>&nbsp;&nbsp;<image height="18px" src="https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white"></image>&nbsp;&nbsp;<image height="18px" src="https://www.vim.org/images/vim_shortcut.ico"></image>&nbsp;<image height="20px" src="https://obsidian.md/favicon.ico"></image></span>
 
 Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, backlink resolution and jumps, search and completion and highlighting, daily notes. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
 
@@ -278,6 +278,10 @@ Use [vim-themis](https://github.com/thinca/vim-themis/issues)
 make init
 make test
 ```
+
+### CI
+
+[.github/workflows/test.yml](./.github/workflows/test.yml)
 
 ## LICENSE
 
