@@ -22,7 +22,7 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 
 ## Features
 
-- Provide a completion function for note entry.
+- Insert mode completion of note names.
 - Find and move the link under the cursor.
 - Go to link before or afater current cursor.
 - Create a note with the name of the link under the cursor.
@@ -32,6 +32,7 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 - Custom formatting of link spacing.
 - Manage multiple `g:vimsidian_path` (Obsidian Vault).
 - Daily note feature.
+- Highlighting broken links.
 - Fewer dependencies.
 
 ## Initialization
@@ -74,12 +75,15 @@ augroup vimsidian_augroup
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sm :VimsidianRgNotesWithMatchesInteractive<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> si :VimsidianRgLinesWithMatchesInteractive<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sF :VimsidianMoveToLink<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> <2-LeftMouse> :VimsidianMoveToLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sk :VimsidianMoveToPreviousLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sj :VimsidianMoveToNextLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sO :VimsidianNewNoteInteractive<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sd :VimsidianDailyNote<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sf :VimsidianFormatLink<CR>
+  au WinEnter,BufEnter $VIMSIDIAN_PATH_PATTERN silent! call vimsidian#MatchBrokenLinks()
+  au CursorMoved $VIMSIDIAN_PATH_PATTERN silent! call vimsidian#MatchCursorLink()
 augroup END
 ```
 
@@ -272,16 +276,12 @@ make lint-vint
 
 ### Testing
 
-Use [vim-themis](https://github.com/thinca/vim-themis/issues)
+Use [vim-themis](https://github.com/thinca/vim-themis/issues), CI [.github/workflows/test.yml](./.github/workflows/test.yml)
 
 ```
 make init
 make test
 ```
-
-### CI
-
-[.github/workflows/test.yml](./.github/workflows/test.yml)
 
 ## LICENSE
 

@@ -52,3 +52,9 @@ function! vimsidian#util#PathJoin(...) abort
   endfor
   return substitute(path[1 :], (exists('+shellslash') ? '[\\/]' : '/') . '\+', '/', 'g')
 endfunction
+
+function! vimsidian#util#CamelCase(str) abort
+  let s = substitute(a:str, '[^A-Za-z0-9]', ' ', 'g')
+  let s = join(map(split(s, '\s\+'), 'toupper(v:val[0]) . v:val[1:]'), '')
+  return s
+endfunction
