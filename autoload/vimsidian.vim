@@ -43,16 +43,16 @@ endfunction
 
 function! vimsidian#RgNotesWithMatchesOpenCmd(word) abort
   let m = vimsidian#unit#RgNotes(a:word)
-  if m ==# 1
+  if len(m) < 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(a:word))
     return
   endif
-  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")))
 endfunction
 
 function! vimsidian#RgLinesWithMatchesOpenCmd(word) abort
   let m = vimsidian#unit#RgLines(a:word)
-  if m ==# 1
+  if len(m) < 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(a:word))
     return
   endif
@@ -66,12 +66,12 @@ function! vimsidian#RgNotesWithMatchesInteractive() abort
     return
   endif
   let m = vimsidian#unit#RgNotes(i)
-  if m ==# 1
+  if len(m) < 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(i))
     return
   endif
 
-  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")))
 endfunction
 
 function! vimsidian#RgLinesWithMatchesInteractive() abort
@@ -81,7 +81,7 @@ function! vimsidian#RgLinesWithMatchesInteractive() abort
     return
   endif
   let m = vimsidian#unit#RgLines(i)
-  if m ==# 1
+  if len(m) < 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(i))
     return
   endif
@@ -91,12 +91,12 @@ endfunction
 
 function! vimsidian#RgTagMatches() abort
   let tag = vimsidian#unit#CursorTag()
-  if tag ==# 1
+  if tag ==# v:null
     call vimsidian#logger#Info('Word under the cursor is not a tag')
     return
   endif
   let m = vimsidian#unit#RgLines(tag)
-  if m ==# 1
+  if len(m) < 1
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(tag))
     return
   endif
@@ -105,9 +105,9 @@ function! vimsidian#RgTagMatches() abort
 endfunction
 
 function! vimsidian#FdLinkedNotesByThisNote() abort
-  let links = vimsidian#unit#LinksInThisNote()
+  let links = vimsidian#unit#NoteNamesInNote()
   if len(links) > 0
-    let m = vimsidian#unit#FdNotes(links)
+    let m = join(vimsidian#unit#FdNotes(links), "\n")
   else
     call vimsidian#logger#Info('No link found in this note')
     return
@@ -126,19 +126,73 @@ function! vimsidian#RgNotesLinkingThisNote() abort
   let ext = expand('%:e')
   if ext ==# 'md'
     let m = vimsidian#unit#RgNotes('[[' . fname . ']]')
-    if m ==# 1
+    if len(m) < 1
       call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote('[[' . fname . ']]'))
       return
     endif
   else
     let m = vimsidian#unit#RgNotes('[[' . expand('%:t') . ']]')
-    if m ==# 1
+    if len(m) < 1
       call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote('[[' . expand('%:t') . ']]'))
       return
     endif
   endif
 
-  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")))
+endfunction
+
+function! vimsidian#MatchBrokenLinks() abort
+  call vimsidian#unit#ClearLinkMatchs()
+  call vimsidian#unit#ClearBrokenLinkMatchs()
+
+  let ls = vimsidian#unit#BrokenLinksInNote()
+  if len(ls) < 1
+    call vimsidian#logger#Debug('No broken links')
+    return
+  endif
+
+  if !exists('w:vimsidian_broken_link_matches')
+    let w:vimsidian_broken_link_matches = {}
+  endif
+
+  for l in ls
+    let pattern = escape('[[' . l . ']]', '\/~ .*^[''$')
+    let w:vimsidian_broken_link_matches[l] = vimsidian#unit#MatchAdd('VimsidianBrokenLinkColor', pattern)
+  endfor
+endfunction
+
+function! vimsidian#MatchCursorLink() abort
+  call vimsidian#unit#ClearLinkMatchs()
+
+  let m = vimsidian#unit#CursorLink()
+  if m ==# v:null
+    call vimsidian#logger#Debug('Empty cursor link')
+    return
+  endif
+
+  let w:vimsidian_link_matches = {}
+
+  if !exists('w:vimsidian_broken_link_matches')
+    let w:vimsidian_broken_link_matches = {}
+  endif
+
+  let pattern = escape('[[' . m . ']]', '\/~ .*^[''$')
+
+  if vimsidian#unit#IsBrokenLink(m) ==# v:true
+    if !exists('w:vimsidian_broken_link_matches[m]')
+      let w:vimsidian_broken_link_matches[m] = vimsidian#unit#MatchAdd('VimsidianBrokenLinkColor', pattern)
+    endif
+  else
+    let w:vimsidian_link_matches[m] = vimsidian#unit#MatchAdd('VimsidianCursorLinkColor', pattern)
+    if exists('w:vimsidian_broken_link_matches[m]')
+      call vimsidian#unit#MatchDelete(w:vimsidian_broken_link_matches[m])
+    endif
+  endif
+endfunction
+
+function! vimsidian#MoveToCursorLink() abort
+  let [line, col] = vimsidian#unit#CursorLinkPosition()
+  call cursor(line, col)
 endfunction
 
 function! vimsidian#MoveToPreviousLink() abort
@@ -153,7 +207,7 @@ endfunction
 
 function! vimsidian#MoveToLink() abort
   let f = vimsidian#unit#CursorLink()
-  if f ==# 1
+  if f ==# v:null
     call vimsidian#logger#Debug('Empty cursor link')
     return
   endif
@@ -174,7 +228,7 @@ function! vimsidian#MoveToLink() abort
   endif
 
   let note = vimsidian#unit#FdNote(f . lex)
-  if note ==# 1
+  if note ==# v:null
     call vimsidian#logger#Debug('Empty note ' . vimsidian#util#WrapWithSingleQuote(f))
     return
   endif
@@ -191,13 +245,13 @@ function! vimsidian#MoveToLink() abort
     call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
   endif
 
-  let [line, col] = vimsidian#unit#InternalLinkPosition(fn)
+  let [line, col] = vimsidian#unit#InternalLinkPosition(expand('%:p'), fn)
   call cursor(line, col)
 endfunction
 
 function! vimsidian#NewNote(dir) abort
   let f = vimsidian#unit#CursorLink()
-  if f ==# 1
+  if f ==# v:null
     call vimsidian#logger#Info('Word under the cursor is not a link')
     return
   endif
@@ -222,7 +276,7 @@ function! vimsidian#NewNote(dir) abort
     call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
   endif
 
-  let [line, col] = vimsidian#unit#InternalLinkPosition(fn)
+  let [line, col] = vimsidian#unit#InternalLinkPosition(expand('%:p'), fn)
   call cursor(line, col)
 endfunction
 

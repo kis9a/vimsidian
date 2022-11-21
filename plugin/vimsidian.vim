@@ -68,6 +68,14 @@ if !exists('g:vimsidian_daily_note_date_format')
   let g:vimsidian_daily_note_date_format = '%Y-%m-%d'
 endif
 
+if !exists('g:max_number_of_links_to_check_for_broken')
+  let g:max_number_of_links_to_check_for_broken = 80
+else
+  if g:max_number_of_links_to_check_for_broken < 1
+    let g:max_number_of_links_to_check_for_broken = 80
+  endif
+endif
+
 if !exists('g:vimsidian_link_open_mode')
   let g:vimsidian_link_open_mode = 'e!'
 endif
@@ -111,11 +119,14 @@ command! VimsidianRgNotesLinkingThisNote call vimsidian#RgNotesLinkingThisNote()
 command! VimsidianFdLinkedNotesByThisNote call vimsidian#FdLinkedNotesByThisNote()
 command! VimsidianRgTagMatches call vimsidian#RgTagMatches()
 command! VimsidianMoveToLink call vimsidian#MoveToLink()
+command! VimsidianMoveToCursorLink call vimsidian#MoveToCursorLink()
 command! VimsidianMoveToNextLink call vimsidian#MoveToNextLink()
 command! VimsidianMoveToPreviousLink call vimsidian#MoveToPreviousLink()
 command! -nargs=1 VimsidianNewNote call vimsidian#NewNote(<q-args>)
 command! VimsidianNewNoteInteractive call vimsidian#NewNoteInteractive()
 command! VimsidianDailyNote call vimsidian#DailyNote()
+command! VimsidianMatchCursorLink call vimsidian#MatchCursorLink()
+command! VimsidianMatchBrokenLinks call vimsidian#MatchBrokenLinks()
 command! VimsidianFormatLink call vimsidian#FormatLink()
 
 " augroup
@@ -126,26 +137,34 @@ augroup vimsidian_plugin
   endif
 
   if g:vimsidian_color_definition_use_default
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkColor term=NONE ctermfg=47 guifg=#689d6a
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkMediaColor term=NONE ctermfg=142 guifg=#b8bb26
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkHeader term=NONE ctermfg=142 guifg=#b8bb26
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianLinkBlock term=NONE ctermfg=142 guifg=#b8bb26
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianTagColor term=NONE ctermfg=109 guifg=#076678
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
+    hi def VimsidianLinkColor term=NONE ctermfg=42 guifg=#00df87
+    hi def VimsidianLinkMediaColor term=NONE ctermfg=208 guifg=#ff8700
+    hi def VimsidianLinkHeaderColor term=NONE ctermfg=142 guifg=#b8bb26
+    hi def VimsidianLinkBlockColor term=NONE ctermfg=142 guifg=#b8bb26
+    hi def VimsidianLinkBlockFlagColor term=NONE ctermfg=142 guifg=#b8bb26
+    hi def VimsidianTagColor term=NONE ctermfg=214 guifg=#ffaf00
+    hi def VimsidianCalloutColor term=NONE ctermfg=117 guifg=#87dfff
+    hi def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
+    hi def VimsidianCursorLinkColor term=NONE ctermfg=47 guifg=#00ff5f
+    hi def VimsidianBrokenLinkColor term=NONE ctermfg=29 guifg=#00875f
   endif
 
   if g:vimsidian_enable_syntax_highlight
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLink containedin=markdownH1,markdownH2,markdownH3,markdownH4,markdownH5,markdownH6 /\v\[\[.{-}\]\]/
+    hi link VimsidianLink VimsidianLinkColor
+    hi link VimsidianLinkMedia VimsidianLinkMediaColor
+    hi link VimsidianLinkHeader VimsidianLinkHeaderColor
+    hi link VimsidianLinkBlock VimsidianLinkBlockColor
+    hi link VimsidianLinkBlockFlag VimsidianLinkBlockFlagColor
+    hi link VimsidianTag VimsidianTagColor
+    hi link VimsidianCallout VimsidianCalloutColor
+
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLink /\v\[\[.{-}\]\]/
     au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkMedia containedin=VimsidianLink /\v\!\[\[.{-}\]\]/
     au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkHeader containedin=VimsidianLink /\v\[\[#.{-}\]\]/
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkBlock containedin=VimsidianLink /\v\[\[\^.{-}\]\]/
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianTag containedin=VimsidianIdea /\v\#(\w+)/
-
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLink VimsidianLinkColor
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLinkMedia VimsidianLinkMediaColor
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLinkHeader VimsidianLinkHeaderColor
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianLinkBlock VimsidianLinkBlockColor
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN hi link VimsidianTag VimsidianTagColor
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkBlock containedin=VimsidianLink /\v\[\[#\^.{-}\]\]/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianLinkBlockFlag /\v\^(\w)+$/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianTag /\v\#(\w+)/
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN syn match VimsidianCallout /\v^\>(\s)+\[!(\w)+\]$/
   endif
 augroup END
 

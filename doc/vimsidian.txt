@@ -15,6 +15,7 @@ CONTENTS                                                 *vimsidian-contents*
   VARIABLES .............. |vimsidian-variables|
   OPTIONS ................ |vimsidian-options|
   COMMANDS ............... |vimsidian-commands|
+  EXAMPLES ............... |vimsidian-examples|
 
 
 ==============================================================================
@@ -74,6 +75,8 @@ All options:
   |g:vimsidian_complete_paths_search_use_fd|
   |g:vimsidian_daily_note_path|
   |g:vimsidian_daily_note_template_path|
+  |g:vimsidian_daily_note_date_format|
+  |g:max_number_of_links_to_check_for_broken|
   |g:vimsidian_link_open_mode|
   |g:vimsidian_color_definition_use_default|
   |g:vimsidian_check_required_commands_executable|
@@ -145,17 +148,25 @@ Change the way the buffer opens when opening a new note
 Path to create daily note
 
 ------------------------------------------------------------------------------
+                                        *g:vimsidian_daily_note_date_format*
+
+  let g:vimsidian_daily_note_date_format = '%Y-%m-%d'
+
+Date format, For more syntax, refer to (:h strftime).
+Default syntax looks like: 2022-01-01
+
+------------------------------------------------------------------------------
                                       *g:vimsidian_daily_note_template_path*
 
   let g:vimsidian_daily_note_template_path = g:vimsidian_daily_note_path
 
-Path of the daily note template. Some parameters described in the template 
+Path of the daily note template. Some parameters described in the template
 file can be converted. Available parameters are listed below.
 
   let now = localtime()
   let aday = (60 * 60 * 24)
 
-Parameters: 
+Parameters:
   {{date}}: strftime(g:vimsidian_daily_note_date_format)
   {{day}}: strftime("%d", now)
   {{month}}: strftime("%m", now)
@@ -163,6 +174,14 @@ Parameters:
   {{previous_date}}: strftime(g:vimsidian_daily_note_date_format, now - aday)
   {{next_date}}: strftime(g:vimsidian_daily_note_date_format, now + aday)
   {{day_of_week}}: strftime("%A", now)
+
+
+------------------------------------------------------------------------------
+                                *g:max_number_of_links_to_check_for_broken*
+
+  let g:max_number_of_links_to_check_for_broken = 80
+
+Maximum number of links to check for broken. Set limits for performance.
 
 ------------------------------------------------------------------------------
                                 *g:vimsidian_color_definition_use_default*
@@ -234,6 +253,8 @@ All commands:
   |:VimsidianNewNote|
   |:VimsidianNewNoteInterfactive|
   |:VimsidianDailyNote|
+  |:VimsidianMatchCursorLink|
+  |:VimsidianMatchBrokenLinks|
   |:VimsidianFormatLink|
 
 ------------------------------------------------------------------------------
@@ -335,6 +356,22 @@ Creates a new note at the location entered by the user
 Create a new daily note based on |g:vimsidian_daily_note_template_path|
 in |g:vimsidian_daily_note_path|. If the note already exists, open it.
 
+
+------------------------------------------------------------------------------
+                                              *vimsidian_match_cursor_link*
+
+  |:VimsidianMatchCursorLink|
+
+Highlight the note under the cursor, or darken the note if it does not exist.
+
+------------------------------------------------------------------------------
+                                              *vimsidian_match_broken_links*
+
+  |:VimsidianMatchBrokenLinks|
+
+Darkens broken links in the note. 
+Adjust |g:max_number_of_links_to_check_for_broken|.
+
 ------------------------------------------------------------------------------
                                                     *vimsidian_format_link*
 
@@ -342,6 +379,56 @@ in |g:vimsidian_daily_note_path|. If the note already exists, open it.
 
 Format vimsidian link string for the current file
 
+
+==============================================================================
+EXAMPLES                                                *vimsidian-examples*
+
+------------------------------------------------------------------------------
+                                    *vimsidian_minimal_configuration_example*
+
+  let g:vimsidian_path = $HOME . '/obsidian'
+  let g:vimsidian_enable_syntax_highlight = 1
+  let g:vimsidian_enable_complete_functions = 1
+  let g:vimsidian_complete_paths = [g:vimsidian_path . '/notes']
+  let $VIMSIDIAN_PATH_PATTERN = g:vimsidian_path . '/*.md'
+  
+  function! s:vimsidianNewNoteAtNotesDirectory()
+    execute ':VimsidianNewNote ' . g:vimsidian_path . '/notes'
+  endfunction
+  
+  augroup vimsidian_augroup
+    au!
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sl :VimsidianFdLinkedNotesByThisNote<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sg :VimsidianRgNotesLinkingThisNote<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> st :VimsidianRgTagMatches<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sm :VimsidianRgNotesWithMatchesInteractive<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> si :VimsidianRgLinesWithMatchesInteractive<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sF :VimsidianMoveToLink<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> <2-LeftMouse> :VimsidianMoveToLink<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sk :VimsidianMoveToPreviousLink<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sj :VimsidianMoveToNextLink<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sO :VimsidianNewNoteInteractive<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sd :VimsidianDailyNote<CR>
+    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
+      nn <buffer> sf :VimsidianFormatLink<CR>
+    au WinEnter,BufEnter $VIMSIDIAN_PATH_PATTERN /,
+      silent! call vimsidian#MatchBrokenLinks()
+    au CursorMoved $VIMSIDIAN_PATH_PATTERN /,
+      silent! call vimsidian#MatchCursorLink()
+  augroup END
 
 ==============================================================================
 vim: tw=78:ft=help
