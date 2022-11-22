@@ -134,6 +134,15 @@ Whether to search files under g:vimsidian_complete_paths using fd,
 use ls when 0
 
 ------------------------------------------------------------------------------
+                                                       *g:vimsidian_use_fzf*
+
+  let g:vimsidian_use_fzf = 0
+
+Open listings using fzf instead of quick fix window, 
+if used, install the fzf plugin and set it to 1.
+https://github.com/junegunn/fzf.vim
+
+------------------------------------------------------------------------------
                                               *g:vimsidian_link_open_mode*
 
   let g:vimsidian_link_open_mode = 'e!'

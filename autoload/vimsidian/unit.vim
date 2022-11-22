@@ -647,6 +647,17 @@ function! vimsidian#unit#AppendNumberToLineForList(m) abort
   return substitute(substitute(a:m, '\v\n', ':1: \n', 'g'), '\v$', ':1: \n', 'g')
 endfunction
 
+function! vimsidian#unit#RemoveLineFromList(m) abort
+  let r = []
+  for l in split(a:m, "\n")
+    let n = split(l, ':')
+    if len(n) > 0
+      call add(r, n[0])
+    endif
+  endfor
+  return r
+endfunction
+
 function! vimsidian#unit#Ls(path, opts) abort
   let cmd = ['ls', a:path] + a:opts
   return vimsidian#action#System(cmd)

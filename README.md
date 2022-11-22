@@ -1,6 +1,6 @@
 # vimsidian
 
-![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)&nbsp;&nbsp;<image height="18px" src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black"></image>&nbsp;&nbsp;<image height="18px" src="https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white"></image>&nbsp;&nbsp;<image height="18px" src="https://www.vim.org/images/vim_shortcut.ico"></image>&nbsp;<image height="20px" src="https://obsidian.md/favicon.ico"></image></span>
+![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)&nbsp;&nbsp;<image height="18px" src="https://www.vim.org/images/vim_shortcut.ico"></image>&nbsp;<image height="20px" src="https://obsidian.md/favicon.ico"></image></span>
 
 Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, backlink resolution and jumps, search and completion and highlighting, daily notes. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
 
@@ -145,6 +145,27 @@ let g:vimsidian_link_open_mode = 'new'
 </details>
 <!--}}}-->
 
+<!--{{{ Use fzf to list note names -->
+<details close>
+<summary>Use fzf to list note names</summary>
+<br/>
+
+Open listings using fzf instead of quick fix window.
+See fzf installation at <https://github.com/junegunn/fzf.vim#installation>
+
+```vim
+# e.g
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+if executable('fzf')
+  let g:vimsidian_use_fzf = 1
+endif
+```
+
+</details>
+<!--}}}-->
+
 <!--{{{ Define the colors yourself -->
 <details close>
 <summary>Define the colors yourself</summary>
@@ -153,12 +174,16 @@ let g:vimsidian_link_open_mode = 'new'
 ```vim
 let g:vimsidian_color_definition_use_default = 0
 
-hi! def VimsidianLinkColor term=NONE ctermfg=47 guifg=#689d6a
-hi! def VimsidianLinkMediaColor term=NONE ctermfg=142 guifg=#b8bb26
-hi! def VimsidianLinkHeader term=NONE ctermfg=142 guifg=#b8bb26
-hi! def VimsidianLinkBlock term=NONE ctermfg=142 guifg=#b8bb26
-hi! def VimsidianTagColor term=NONE ctermfg=109 guifg=#076678
-hi! def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
+hi def VimsidianLinkColor term=NONE ctermfg=42 guifg=#00df87
+hi def VimsidianLinkMediaColor term=NONE ctermfg=208 guifg=#ff8700
+hi def VimsidianLinkHeaderColor term=NONE ctermfg=142 guifg=#b8bb26
+hi def VimsidianLinkBlockColor term=NONE ctermfg=142 guifg=#b8bb26
+hi def VimsidianLinkBlockFlagColor term=NONE ctermfg=142 guifg=#b8bb26
+hi def VimsidianTagColor term=NONE ctermfg=214 guifg=#ffaf00
+hi def VimsidianCalloutColor term=NONE ctermfg=117 guifg=#87dfff
+hi def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
+hi def VimsidianCursorLinkColor term=NONE ctermfg=47 guifg=#00ff5f
+hi def VimsidianBrokenLinkColor term=NONE ctermfg=29 guifg=#00875f
 ```
 
 </details>
@@ -187,15 +212,17 @@ The template file can use some parameters. (:h g:vimsidian_daily_note_template_p
 </details>
 <!--}}}-->
 
-<!--{{{ Disable required commands checks to make plugins load a bit faster -->
+<!--{{{ Create new note same directory as current file -->
 <details close>
-<summary>Disable required commands checks to make plugins load a bit faster</summary>
+<summary>Create new note same directory as current file</summary>
 <br/>
 
 ```vim
-" It is assumed that the following commands are already installed
-" :echo g:vimsidian_required_commands
-let g:vimsidian_check_required_commands_executable = 0
+function! s:vimsidianNewNoteSameDirectoryAsCurrentFile()
+  execute ':VimsidianNewNote ' . fnamemodify(expand('%:p'), ':h')
+endfunction
+
+au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> sC :call <SID>vimsidianNewNoteSameDirectoryAsCurrentFile()<CR>
 ```
 
 </details>
@@ -215,17 +242,15 @@ let g:vimsidian_complete_paths = [g:vimsidian_path . '/notes/foo', g:vimsidian_p
 </details>
 <!--}}}-->
 
-<!--{{{ Create new note same directory as current file -->
+<!--{{{ Disable required commands checks to make plugins load a bit faster -->
 <details close>
-<summary>Create new note same directory as current file</summary>
+<summary>Disable required commands checks to make plugins load a bit faster</summary>
 <br/>
 
 ```vim
-function! s:vimsidianNewNoteSameDirectoryAsCurrentFile()
-  execute ':VimsidianNewNote ' . fnamemodify(expand('%:p'), ':h')
-endfunction
-
-au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> sC :call <SID>vimsidianNewNoteSameDirectoryAsCurrentFile()<CR>
+" It is assumed that the following commands are already installed
+" :echo g:vimsidian_required_commands
+let g:vimsidian_check_required_commands_executable = 0
 ```
 
 </details>

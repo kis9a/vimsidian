@@ -32,12 +32,16 @@ function! vimsidian#CompleteNotes(findstart, base) abort
   endif
 endfunction
 
-function! vimsidian#MatchesOpen(m) abort
+function! vimsidian#MatchesOpen(m, n) abort
   if empty (a:m)
     call vimsidian#logger#Debug('Matches empty' . vimsidian#util#WrapWithSingleQuote(a:m))
     return
   else
-    call vimsidian#action#OpenQuickFix(a:m, g:vimsidian_path)
+    if g:vimsidian_use_fzf && a:n
+      call fzf#run(fzf#wrap({ 'source': vimsidian#unit#RemoveLineFromList(a:m), 'sink': g:vimsidian_link_open_mode }))
+    else
+      call vimsidian#action#OpenQuickFix(a:m, g:vimsidian_path)
+    endif
   endif
 endfunction
 
@@ -47,7 +51,7 @@ function! vimsidian#RgNotesWithMatchesOpenCmd(word) abort
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(a:word))
     return
   endif
-  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")))
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")), v:true)
 endfunction
 
 function! vimsidian#RgLinesWithMatchesOpenCmd(word) abort
@@ -56,7 +60,7 @@ function! vimsidian#RgLinesWithMatchesOpenCmd(word) abort
     call vimsidian#logger#Info('Not found ' . vimsidian#util#WrapWithSingleQuote(a:word))
     return
   endif
-  call vimsidian#MatchesOpen(m)
+  call vimsidian#MatchesOpen(m, v:null)
 endfunction
 
 function! vimsidian#RgNotesWithMatchesInteractive() abort
@@ -71,7 +75,7 @@ function! vimsidian#RgNotesWithMatchesInteractive() abort
     return
   endif
 
-  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")))
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")), v:true)
 endfunction
 
 function! vimsidian#RgLinesWithMatchesInteractive() abort
@@ -86,7 +90,7 @@ function! vimsidian#RgLinesWithMatchesInteractive() abort
     return
   endif
 
-  call vimsidian#MatchesOpen(m)
+  call vimsidian#MatchesOpen(m, v:null)
 endfunction
 
 function! vimsidian#RgTagMatches() abort
@@ -101,7 +105,7 @@ function! vimsidian#RgTagMatches() abort
     return
   endif
 
-  call vimsidian#MatchesOpen(m)
+  call vimsidian#MatchesOpen(m, v:null)
 endfunction
 
 function! vimsidian#FdLinkedNotesByThisNote() abort
@@ -117,7 +121,7 @@ function! vimsidian#FdLinkedNotesByThisNote() abort
     call vimsidian#logger#Info('Linked notes not found')
     return
   else
-  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m))
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(m), v:true)
   endif
 endfunction
 
@@ -138,7 +142,7 @@ function! vimsidian#RgNotesLinkingThisNote() abort
     endif
   endif
 
-  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")))
+  call vimsidian#MatchesOpen(vimsidian#unit#AppendNumberToLineForList(join(m, "\n")), v:true)
 endfunction
 
 function! vimsidian#MatchBrokenLinks() abort

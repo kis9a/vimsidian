@@ -52,6 +52,10 @@ if !exists('g:vimsidian_complete_paths_search_use_fd')
   let g:vimsidian_complete_paths_search_use_fd = 1 " 0: ls, 1: fd
 endif
 
+if !exists('g:vimsidian_use_fzf')
+  let g:vimsidian_use_fzf = 0
+endif
+
 if !exists('g:vimsidian_daily_note_path')
   let g:vimsidian_daily_note_path = g:vimsidian_path
 else
