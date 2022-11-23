@@ -7,7 +7,7 @@ Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, ba
 This plugin was made for me, but I hope it will be useful for those who want to easily edit [Obsidian](https://obsidian.md/) notes with vim as I do. If you have trouble using it, please post an [issues](https://github.com/kis9a/vimsidian/issues) below. Contributions, edits and distribution are also welcome.
 
 <br/>
-<image width="640px" src="https://raw.githubusercontent.com/kis9a/vimsidian/main/pictures/vimsidian.gif"></image>
+<image width="680px" src="https://raw.githubusercontent.com/kis9a/vimsidian/main/pictures/vimsidian.gif"></image>
 
 ## Motivation
 
@@ -74,7 +74,7 @@ augroup vimsidian_augroup
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> st :VimsidianRgTagMatches<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sm :VimsidianRgNotesWithMatchesInteractive<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> si :VimsidianRgLinesWithMatchesInteractive<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sF :VimsidianMoveToLink<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> <C-k> :VimsidianMoveToLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> <2-LeftMouse> :VimsidianMoveToLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sk :VimsidianMoveToPreviousLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sj :VimsidianMoveToNextLink<CR>
