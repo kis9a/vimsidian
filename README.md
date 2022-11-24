@@ -1,6 +1,6 @@
 # vimsidian
 
-![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)&nbsp;&nbsp;<image height="18px" src="https://www.vim.org/images/vim_shortcut.ico"></image>&nbsp;<image height="20px" src="https://obsidian.md/favicon.ico"></image></span>
+![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)
 
 Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, backlink resolution and jumps, search and completion and highlighting, daily notes. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
 
@@ -58,9 +58,7 @@ Plug 'kis9a/vimsidian'
 
 ```vim
 let g:vimsidian_path = $HOME . '/obsidian'
-let g:vimsidian_enable_syntax_highlight = 1
-let g:vimsidian_enable_complete_functions = 1
-let g:vimsidian_complete_paths = [g:vimsidian_path . '/notes', g:vimsidian_path . '/images']
+let g:vimsidian_complete_paths = [g:vimsidian_path]
 let $VIMSIDIAN_PATH_PATTERN = g:vimsidian_path . '/*.md'
 
 function! s:vimsidianNewNoteAtNotesDirectory()
@@ -71,9 +69,9 @@ augroup vimsidian_augroup
   au!
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sl :VimsidianFdLinkedNotesByThisNote<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sg :VimsidianRgNotesLinkingThisNote<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> st :VimsidianRgTagMatches<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sm :VimsidianRgNotesWithMatchesInteractive<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> si :VimsidianRgLinesWithMatchesInteractive<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> st :VimsidianRgTagMatches<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> <C-k> :VimsidianMoveToLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> <2-LeftMouse> :VimsidianMoveToLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sk :VimsidianMoveToPreviousLink<CR>
@@ -114,7 +112,7 @@ endfunction
 
 augroup vimsidian_augroup
   au!
-  au VimEnter,BufNewFile,BufReadPost *.md call s:vimsidianSwitchVault()
+  au VimEnter,BufNewFile,BufReadPost,WinEnter,BufEnter *.md call s:vimsidianSwitchVault()
 " ry ...
 ```
 
@@ -256,16 +254,40 @@ let g:vimsidian_check_required_commands_executable = 0
 </details>
 <!--}}}-->
 
-<!--{{{ Get link name under cursor -->
+<!--{{{ #vimsidian functions -->
 <details close>
-<summary>Get link name under cursor</summary>
+<summary>#vimsidian functions</summary>
 <br/>
 
 ```vim
-function! s:getCurrentCursorLink()
-  let link = vimsidian#unit#CursorLink()
-  echo "Link name under cursor '" . link . "'"
+function! s:MocByFd(noteKeyword)
+  let files = split(vimsidian#unit#Fd(g:vimsidian_path, []), '\n')
+  for f in files
+    if f =~# '\v^.*' . a:noteKeyword
+      put='[[' . fnamemodify(f, ':t:r') . ']]'
+    endif
+  endfor
+  return vimsidian#unit#Find(files, '^.*/' . a:noteKeyword)
 endfunction
+
+command! -nargs=1 VimsidianMocByFd call s:MocByFd(<q-args>)
+
+function! s:MocByRg(keyword)
+  for path in vimsidian#unit#RgNotes(a:keyword)
+    put='[[' . fnamemodify(path, ':t:r') . ']]'
+  endfor"
+endfunction
+
+command! -nargs=1 VimsidianMocByRg call s:MocByRg(<q-args>)
+
+function! s:HiCursorLink()
+  let link = vimsidian#unit#CursorLink()
+  if link !=# v:null
+    normal! "zyiw:let @/ = '\<' . @z . '\>'<CR>:set hlsearch<CR>
+  endif
+endfunction
+
+command! VimsidianHiCursorLink call s:HiCursorLink()
 ```
 
 </details>
@@ -281,7 +303,10 @@ See [Vim doc - Syntax highlight, Variables and Commands help](./doc/vimsidian.tx
 
 ## Developments
 
-If you contribute to this repository, please use the following tools for linting and testing.
+<!--{{{ If you contribute to this repository, please use the following tools for linting and testing -->
+<details close>
+<summary>If you contribute to this repository, please use the following tools for linting and testing</summary>
+<br/>
 
 ### Linting
 
@@ -307,6 +332,9 @@ Use [vim-themis](https://github.com/thinca/vim-themis/issues), CI [.github/workf
 make init
 make test
 ```
+
+</details>
+<!--}}}-->
 
 ## LICENSE
 
