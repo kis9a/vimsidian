@@ -256,7 +256,7 @@ function! s:suite.link_stack_push() abort
   call s:assert.equal(vimsidian#linkStack#Push(s:v1), [s:v1, s:v2, s:v1])
 endfunction
 
-function! s:suite.local_window_variable_scoped()
+function! s:suite.local_window_variable_scoped() abort
   call s:edit_A()
   let w:vimsidian_foo = ['A']
   let Atabpagenr = tabpagenr()
@@ -280,7 +280,7 @@ function! s:suite.local_window_variable_scoped()
   call s:assert.equal(gettabwinvar(Atabpagenr, Awinid, 'vimsidian_foo'), ['A'])
 endfunction
 
-function! s:suite.link_stack_winnew()
+function! s:suite.link_stack_winnew() abort
   call s:edit_A()
   let Atabpagenr = tabpagenr()
   let Awinid = win_getid()
@@ -294,13 +294,15 @@ function! s:suite.link_stack_winnew()
   call s:assert.not_equal(Atabpagenr, A1tabpagenr)
 
   call cursor(3, 1)
-  exec "let [line, col] = vimsidian#unit#CursorLinkPosition() \n let v = { 'path': expand('%:p'), 'line': line, 'col': col } \n call vimsidian#linkStack#Push(v)"
+  let [line, col] = vimsidian#unit#CursorLinkPosition()
+  let v = { 'path': expand('%:p'), 'line': line, 'col': col }
+  call vimsidian#linkStack#Push(v)
   call s:assert.equal(w:vimsidian_link_stack, [s:v1, v])
 
   call s:assert.equal(gettabwinvar(Atabpagenr, Awinid, 'vimsidian_link_stack'), [s:v1])
 endfunction
 
-function! s:suite.link_top_curidx()
+function! s:suite.link_top_curidx() abort
   let w:vimsidian_link_stack = []
   call vimsidian#linkStack#TopCuridx()
   call s:assert.equal(w:vimsidian_link_stack_curidx, -1)
@@ -316,7 +318,7 @@ function! s:suite.link_top_curidx()
   call s:assert.equal(w:vimsidian_link_stack_curidx, 3)
 endfunction
 
-function! s:suite.link_stack_pop_to_curidx()
+function! s:suite.link_stack_pop_to_curidx() abort
   let s:v1 = {'path': 'path', 'line': 3, 'col': 5}
   let w:vimsidian_link_stack = [s:v1, s:v1, s:v1]
   let w:vimsidian_link_stack_curidx = 1
@@ -329,7 +331,7 @@ function! s:suite.link_stack_pop_to_curidx()
   call s:assert.equal(w:vimsidian_link_stack, [s:v1])
 endfunction
 
-function! s:suite.link_stack_previous_entry()
+function! s:suite.link_stack_previous_entry() abort
   let s:v0 = {'path': 'path', 'line': 0, 'col': 0}
   let s:v1 = {'path': 'path', 'line': 1, 'col': 1}
   let s:v2 = {'path': 'path', 'line': 2, 'col': 2}
@@ -367,7 +369,7 @@ function! s:suite.link_stack_previous_entry()
   call s:assert.equal(vimsidian#linkStack#PreviousEntry(), v:null)
 endfunction
 
-function! s:suite.link_stack_next_entry()
+function! s:suite.link_stack_next_entry() abort
   let s:v0 = {'path': 'path', 'line': 0, 'col': 0}
   let s:v1 = {'path': 'path', 'line': 1, 'col': 1}
   let s:v2 = {'path': 'path', 'line': 2, 'col': 2}

@@ -345,11 +345,11 @@ function! vimsidian#DailyNote() abort
   endif
 endfunction
 
-function vimsidian#LinkStack()
+function! vimsidian#LinkStack() abort
   call vimsidian#linkStack#Show()
 endfunction
 
-function! vimsidian#MoveToPreviousEntryInLinkStack()
+function! vimsidian#MoveToPreviousEntryInLinkStack() abort
   let entry = vimsidian#linkStack#PreviousEntry()
   if type(entry) ==# type(v:null)
     call vimsidian#logger#Info('No previous entry in link stack')
@@ -365,7 +365,7 @@ function! vimsidian#MoveToPreviousEntryInLinkStack()
   call cursor(entry['line'], entry['col'])
 endfunction
 
-function! vimsidian#MoveToNextEntryInLinkStack()
+function! vimsidian#MoveToNextEntryInLinkStack() abort
   let entry = vimsidian#linkStack#NextEntry()
   if type(entry) ==# type(v:null)
     call vimsidian#logger#Info('No next entry in link stack')
