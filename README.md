@@ -31,6 +31,7 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 - Default syntax highlighting settings.
 - Custom formatting of link spacing.
 - Manage multiple `g:vimsidian_path` (Obsidian Vault).
+- Stack of link jump history in .
 - Daily note feature.
 - Highlighting broken links.
 - Fewer dependencies.
@@ -124,21 +125,22 @@ augroup vimsidian_augroup
 <details open>
 <summary>Use link stack</summary>
 
-Keep a stack of link jump history in each window (w:vimsidian_link_stack)
-Provides jump and jumpback functionality to entries in the link stack.
-Like CTRL+t/CTRL+] for tags using ctags in vim.
+Keep a stack of link jump history in each window (w:vimsidian_link_stack)  
+Provides jump and jumpback functionality to entries in the link stack.  
+Like CTRL+t/CTRL+] for tags using ctags in vim. (:h tags)
 
 Detials: <https://github.com/kis9a/vimsidian/pull/10>, <https://github.com/kis9a/vimsidian/issues/9>
 
 ```vim
 let g:vimsidian_enable_link_stack = 1
 
-" example
+" Example mapping like ctags jump
 augroup vimsidian_augroup
   au!
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <buffer> <C-]> :VimsidianMoveToNextEntryInLinkStack<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <buffer> <C-t> :VimsidianMoveToPreviousEntryInLinkStack<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <buffer> S :VimsidianLinkStack<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> <C-]> :VimsidianMoveToLink<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <C-t> :VimsidianMoveToPreviousEntryInLinkStack<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> sn :VimsidianMoveToNextEntryInLinkStack<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> ss :VimsidianLinkStack<CR>
 " ry ...
 ```
 
