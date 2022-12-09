@@ -119,6 +119,53 @@ augroup vimsidian_augroup
 </details>
 <!--}}}-->
 
+<!--{{{Use link stack -->
+
+<details open>
+<summary>Use link stack</summary>
+
+Keep a stack of link jump history in each window (w:w:vimsidian_link_stack)
+Provides jump and jumpback functionality to entries in the link stack.
+Like CTRL+t/CTRL+] for tags using ctags in vim.
+
+Detials: <https://github.com/kis9a/vimsidian/pull/9>, <https://github.com/kis9a/vimsidian/issues/9>
+
+```vim
+let g:vimsidian_enable_link_stack = 1
+
+" example
+augroup vimsidian_augroup
+  au!
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <buffer> <C-]> :VimsidianMoveToNextEntryInLinkStack<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <buffer> <C-t> :VimsidianMoveToPreviousEntryInLinkStack<CR>
+  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <buffer> S :VimsidianLinkStack<CR>
+" ry ...
+```
+
+</details>
+<!--}}}-->
+
+<!--{{{ Use fzf to list note names -->
+<details open>
+<summary>Use fzf to list note names</summary>
+<br/>
+
+Open listings using fzf instead of quick fix window.
+See fzf installation at <https://github.com/junegunn/fzf.vim#installation>
+
+```vim
+# e.g
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+if executable('fzf')
+  let g:vimsidian_use_fzf = 1
+endif
+```
+
+</details>
+<!--}}}-->
+
 <!--{{{ Change link open mode -->
 <details close>
 <summary>Change link open mode</summary>
@@ -138,27 +185,6 @@ let g:vimsidian_link_open_mode = 'vnew'
 
 " hsplit
 let g:vimsidian_link_open_mode = 'new'
-```
-
-</details>
-<!--}}}-->
-
-<!--{{{ Use fzf to list note names -->
-<details close>
-<summary>Use fzf to list note names</summary>
-<br/>
-
-Open listings using fzf instead of quick fix window.
-See fzf installation at <https://github.com/junegunn/fzf.vim#installation>
-
-```vim
-# e.g
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
-
-if executable('fzf')
-  let g:vimsidian_use_fzf = 1
-endif
 ```
 
 </details>

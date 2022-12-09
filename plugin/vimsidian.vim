@@ -52,6 +52,10 @@ if !exists('g:vimsidian_complete_paths_search_use_fd')
   let g:vimsidian_complete_paths_search_use_fd = 1 " 0: ls, 1: fd
 endif
 
+if !exists('g:vimsidian_enable_link_stack')
+  let g:vimsidian_enable_link_stack = 1
+endif
+
 if !exists('g:vimsidian_use_fzf')
   let g:vimsidian_use_fzf = 0
 endif
@@ -126,6 +130,9 @@ command! VimsidianMoveToLink call vimsidian#MoveToLink()
 command! VimsidianMoveToCursorLink call vimsidian#MoveToCursorLink()
 command! VimsidianMoveToNextLink call vimsidian#MoveToNextLink()
 command! VimsidianMoveToPreviousLink call vimsidian#MoveToPreviousLink()
+command! VimsidianLinkStack call vimsidian#LinkStack()
+command! VimsidianMoveToNextEntryInLinkStack call vimsidian#MoveToNextEntryInLinkStack()
+command! VimsidianMoveToPreviousEntryInLinkStack call vimsidian#MoveToPreviousEntryInLinkStack()
 command! -nargs=1 VimsidianNewNote call vimsidian#NewNote(<q-args>)
 command! VimsidianNewNoteInteractive call vimsidian#NewNoteInteractive()
 command! VimsidianDailyNote call vimsidian#DailyNote()
@@ -138,6 +145,10 @@ augroup vimsidian_plugin
   au!
   if g:vimsidian_enable_complete_functions
     au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN setlocal completefunc=vimsidian#CompleteNotes
+  endif
+
+  if g:vimsidian_enable_link_stack
+    au VimEnter,WinNew $VIMSIDIAN_PATH_PATTERN call vimsidian#linkStack#WinNew()
   endif
 
   if g:vimsidian_color_definition_use_default

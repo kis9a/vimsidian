@@ -73,6 +73,7 @@ All options:
   |g:vimsidian_enable_syntax_highlight|
   |g:vimsidian_enable_complete_functions|
   |g:vimsidian_complete_paths_search_use_fd|
+  g:vimsidian_enable_link_stack
   |g:vimsidian_daily_note_path|
   |g:vimsidian_daily_note_template_path|
   |g:vimsidian_daily_note_date_format|
@@ -132,6 +133,15 @@ enabled by default
 
 Whether to search files under g:vimsidian_complete_paths using fd,
 use ls when 0
+
+------------------------------------------------------------------------------
+                                             *g:vimsidian_enable_link_stack*
+
+  let g:vimsidian_enable_link_stack = 1
+
+Keep a stack of link jump history in each window (w:w:vimsidian_link_stack)
+Provides jump and jumpback functionality to entries in the link stack.
+Enabled by default
 
 ------------------------------------------------------------------------------
                                                        *g:vimsidian_use_fzf*
@@ -259,6 +269,9 @@ All commands:
   |:VimsidianMoveToLink|
   |:VimsidianMoveToPreviousLink|
   |:VimsidianMoveToNextLink|
+  |:VimsidianLinkStack|
+  |:VimsidianMoveToNextEntryInLinkStack|
+  |:VimsidianMoveToPreviousEntryInLinkStack|
   |:VimsidianNewNote|
   |:VimsidianNewNoteInterfactive|
   |:VimsidianDailyNote|
@@ -341,6 +354,27 @@ Go to link before current cursor
   |:VimsidianMoveToNextLink|
 
 Go to link before current cursor
+
+------------------------------------------------------------------------------
+                                                     *vimsidian_link_stack*
+
+  |:VimsidianLinkStack|
+
+Show the contents of the link stack and the current position
+
+------------------------------------------------------------------------------
+                                *vimsidian_move_to_next_entry_in_link_stack*
+
+  |:VimsidianMoveToNextEntryInLinkStack|
+
+Move to next entry in link stack
+
+------------------------------------------------------------------------------
+                                *vimsidian_move_to_previous_entry_in_link_stack*
+
+  |:VimsidianMoveToPreviousEntryInLinkStack|
+
+Move to previous entry in link stack
 
 ------------------------------------------------------------------------------
                                                          *vimsidian_new_note*

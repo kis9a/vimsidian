@@ -246,7 +246,11 @@ function! vimsidian#MoveToLink() abort
     call vimsidian#logger#Info('Linked note not found' . vimsidian#util#WrapWithSingleQuote(f . lex))
     return
   else
-    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
+    if g:vimsidian_enable_link_stack
+      call vimsidian#linkStack#MoveToLink(note)
+    else
+      call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
+    endif
   endif
 
   let [line, col] = vimsidian#unit#InternalLinkPosition(expand('%:p'), fn)
@@ -339,6 +343,42 @@ function! vimsidian#DailyNote() abort
     endif
     call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, dnote)
   endif
+endfunction
+
+function vimsidian#LinkStack()
+  call vimsidian#linkStack#Show()
+endfunction
+
+function! vimsidian#MoveToPreviousEntryInLinkStack()
+  let entry = vimsidian#linkStack#PreviousEntry()
+  if type(entry) ==# type(v:null)
+    call vimsidian#logger#Info('No previous entry in link stack')
+    return
+  endif
+
+  if vimsidian#linkStack#TypeCheckItem(entry) ==# v:null
+    call vimsidian#logger#Info('Invalid type entry ' . entry)
+    return
+  endif
+
+  call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, entry['path'])
+  call cursor(entry['line'], entry['col'])
+endfunction
+
+function! vimsidian#MoveToNextEntryInLinkStack()
+  let entry = vimsidian#linkStack#NextEntry()
+  if type(entry) ==# type(v:null)
+    call vimsidian#logger#Info('No next entry in link stack')
+    return
+  endif
+
+  if vimsidian#linkStack#TypeCheckItem(entry) ==# v:null
+    call vimsidian#logger#Info('Invalid type entry ' . entry)
+    return
+  endif
+
+  call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, entry['path'])
+  call cursor(entry['line'], entry['col'])
 endfunction
 
 function! vimsidian#FormatLink() abort
