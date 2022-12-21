@@ -1,6 +1,6 @@
 # vimsidian
 
-![](https://img.shields.io/github/workflow/status/kis9a/vimsidian/test)
+![](https://img.shields.io/github/actions/workflow/status/kis9a/vimsidian/test.yml?branch=main)
 
 Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, backlink resolution and jumps, search and completion and highlighting, daily notes. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
 
