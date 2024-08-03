@@ -2,7 +2,7 @@
 
 ![](https://img.shields.io/github/actions/workflow/status/kis9a/vimsidian/test.yml?branch=main)
 
-Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, backlink resolution and jumps, search and completion and highlighting, daily notes. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
+Vim plugin to help edit [Obsidian](https://obsidian.md/) notes in Vim. Links, backlink resolution and jumps, search and completion and highlighting. Even if you don't use [Obsidian](https://obsidian.md/), you can use it to manage your notes locally.
 
 This plugin was made for me, but I hope it will be useful for those who want to easily edit [Obsidian](https://obsidian.md/) notes with vim as I do. If you have trouble using it, please post an [issues](https://github.com/kis9a/vimsidian/issues) below. Contributions, edits and distribution are also welcome.
 
@@ -32,9 +32,12 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 - Custom formatting of link spacing.
 - Manage multiple `g:vimsidian_path` (Obsidian Vault).
 - Stack of link jump history in .
-- Daily note feature.
 - Highlighting broken links.
 - Fewer dependencies.
+
+## Extensions
+
+* [kis9a/vimsidian-daily-notes: Daily note extension for vimsidian](https://github.com/kis9a/vimsidian-daily-notes)
 
 ## Initialization
 
@@ -79,7 +82,6 @@ augroup vimsidian_augroup
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sj :VimsidianMoveToNextLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sO :VimsidianNewNoteInteractive<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sd :VimsidianDailyNote<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sf :VimsidianFormatLink<CR>
   au WinEnter,BufEnter $VIMSIDIAN_PATH_PATTERN silent! call vimsidian#MatchBrokenLinks()
   au CursorMoved $VIMSIDIAN_PATH_PATTERN silent! call vimsidian#MatchCursorLink()
@@ -210,29 +212,6 @@ hi def VimsidianCalloutColor term=NONE ctermfg=117 guifg=#87dfff
 hi def VimsidianPromptColor term=NONE ctermfg=109 guifg=#076678
 hi def VimsidianCursorLinkColor term=NONE ctermfg=47 guifg=#00ff5f
 hi def VimsidianBrokenLinkColor term=NONE ctermfg=29 guifg=#00875f
-```
-
-</details>
-<!--}}}-->
-
-<!--{{{ Custom daily note template -->
-<details close>
-<summary>Custom daily note template</summary>
-<br/>
-
-```vim
-let g:vimsidian_daily_note_path = g:vimsidian_path . "/daily/" . strftime("%Y-%m")
-let g:vimsidian_daily_note_template_path = g:vimsidian_path . "/daily/Daily template.md"
-```
-
-The template file can use some parameters. (:h g:vimsidian_daily_note_template_path)
-
-```
-[[{{date}}]]
-
-< [[{{previous_date}}]] | [[{{next_date}}]] >
-
-[[{{year}}-{{month}}]] [[{{day}}]] [[{{day_of_week}}]]
 ```
 
 </details>
