@@ -566,16 +566,6 @@ function! vimsidian#unit#MatchAdd(group, pattern) abort
   return matchadd(a:group, a:pattern)
 endfunction
 
-function! vimsidian#unit#FormatLinkString(s) abort
-  let s = substitute(a:s, '\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<![[', ' [[', 'g')
-  let s = substitute(s, '\v]](\s|\n|$|\.|\,|\)|[\u3001]|[\u3002])@!', ']] ', 'g')
-  let s = substitute(s, '\v(\s|\n|^|\!|\(|[\u3001]|[\u3002])@<!\s+[[', ' [[', 'g')
-  let s = substitute(s, '\v(\!|\(|[\u3001]|[\u3002])@<=\s+[[', '[[', 'g')
-  let s = substitute(s, '\v]]\s+(\s|\n|$|\.|\,|\)|[\u3001]|[\u3002])@!', ']] ', 'g')
-  let s = substitute(s, '\v]]\s+(\n|$|\.|\,|\)|[\u3001]|[\u3002])@=', ']]', 'g')
-  return s
-endfunction
-
 function! vimsidian#unit#Rg(word, opts) abort
   let cmd = ['rg', '-F', '-n', vimsidian#util#WrapWithSingleQuote(a:word), g:vimsidian_path] + a:opts
   return vimsidian#action#System(cmd)
