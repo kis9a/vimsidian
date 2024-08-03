@@ -60,22 +60,6 @@ if !exists('g:vimsidian_use_fzf')
   let g:vimsidian_use_fzf = 0
 endif
 
-if !exists('g:vimsidian_daily_note_path')
-  let g:vimsidian_daily_note_path = g:vimsidian_path
-else
-  let g:vimsidian_daily_note_path = glob(g:vimsidian_daily_note_path)
-endif
-
-if !exists('g:vimsidian_daily_note_template_path')
-  let g:vimsidian_daily_note_template_path = glob(g:vimsidian_daily_note_path) . '/template.md'
-else
-  let g:vimsidian_daily_note_template_path = glob(g:vimsidian_daily_note_template_path)
-endif
-
-if !exists('g:vimsidian_daily_note_date_format')
-  let g:vimsidian_daily_note_date_format = '%Y-%m-%d'
-endif
-
 if !exists('g:max_number_of_links_to_check_for_broken')
   let g:max_number_of_links_to_check_for_broken = 80
 else
@@ -135,10 +119,20 @@ command! VimsidianMoveToNextEntryInLinkStack call vimsidian#MoveToNextEntryInLin
 command! VimsidianMoveToPreviousEntryInLinkStack call vimsidian#MoveToPreviousEntryInLinkStack()
 command! -nargs=1 VimsidianNewNote call vimsidian#NewNote(<q-args>)
 command! VimsidianNewNoteInteractive call vimsidian#NewNoteInteractive()
-command! VimsidianDailyNote call vimsidian#DailyNote()
 command! VimsidianMatchCursorLink call vimsidian#MatchCursorLink()
 command! VimsidianMatchBrokenLinks call vimsidian#MatchBrokenLinks()
 command! VimsidianFormatLink call vimsidian#FormatLink()
+
+" will be removed
+command! VimsidianDailyNote call s:dailyNote()
+
+function! s:dailyNote()
+  if exists('*vimsidian#daily_notes#open')
+    call vimsidian#daily_notes#open()
+  else
+    echo 'The daily notes function has been moved to https://github.com/kis9a/vimsidian-daily-notes'
+  endif
+endfunction
 
 " augroup
 augroup vimsidian_plugin

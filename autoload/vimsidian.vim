@@ -315,36 +315,6 @@ function! vimsidian#NewNoteInteractive() abort
   endif
 endfunction
 
-function! vimsidian#DailyNote() abort
-  if empty(glob(g:vimsidian_daily_note_path)) || !isdirectory(glob(g:vimsidian_daily_note_path))
-    call vimsidian#logger#Info('No such directory ' . g:vimsidian_daily_note_path)
-    return
-  endif
-
-  let date = strftime(g:vimsidian_daily_note_date_format)
-  if empty(date)
-    call vimsidian#logger#Info('Empty strftime date format')
-    return
-  endif
-
-  let dnote = vimsidian#util#PathJoin(g:vimsidian_daily_note_path, date . '.md')
-
-  if empty(glob(g:vimsidian_daily_note_template_path))
-    if empty(glob(dnote))
-      let s = vimsidian#unit#DailyNoteReplaceParametrizedString("[[{{date}}]]\n\n< [[{{previous_date}}]] | [[{{next_date}}]] >\n\n")
-      call vimsidian#action#WriteFile(split(s, "\n"), dnote, 'b')
-    endif
-    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, dnote)
-  else
-    if empty(glob(dnote))
-      let r = join(vimsidian#action#ReadFile(g:vimsidian_daily_note_template_path), "\n")
-      let r = vimsidian#unit#DailyNoteReplaceParametrizedString(r)
-      call vimsidian#action#WriteFile(split(r, "\n"), dnote, 'b')
-    endif
-    call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, dnote)
-  endif
-endfunction
-
 function! vimsidian#LinkStack() abort
   call vimsidian#linkStack#Show()
 endfunction

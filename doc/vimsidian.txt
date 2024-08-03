@@ -74,9 +74,6 @@ All options:
   |g:vimsidian_enable_complete_functions|
   |g:vimsidian_complete_paths_search_use_fd|
   g:vimsidian_enable_link_stack
-  |g:vimsidian_daily_note_path|
-  |g:vimsidian_daily_note_template_path|
-  |g:vimsidian_daily_note_date_format|
   |g:max_number_of_links_to_check_for_broken|
   |g:vimsidian_link_open_mode|
   |g:vimsidian_color_definition_use_default|
@@ -160,42 +157,6 @@ https://github.com/junegunn/fzf.vim
 Change the way the buffer opens when opening a new note
 
 ------------------------------------------------------------------------------
-                                              *g:vimsidian_daily_note_path*
-
-  let g:vimsidian_daily_note_path = g:vimsidian_path
-
-Path to create daily note
-
-------------------------------------------------------------------------------
-                                        *g:vimsidian_daily_note_date_format*
-
-  let g:vimsidian_daily_note_date_format = '%Y-%m-%d'
-
-Date format, For more syntax, refer to (:h strftime).
-Default syntax looks like: 2022-01-01
-
-------------------------------------------------------------------------------
-                                      *g:vimsidian_daily_note_template_path*
-
-  let g:vimsidian_daily_note_template_path = g:vimsidian_daily_note_path
-
-Path of the daily note template. Some parameters described in the template
-file can be converted. Available parameters are listed below.
-
-  let now = localtime()
-  let aday = (60 * 60 * 24)
-
-Parameters:
-  {{date}}: strftime(g:vimsidian_daily_note_date_format)
-  {{day}}: strftime("%d", now)
-  {{month}}: strftime("%m", now)
-  {{year}}: strftime("%Y", now)
-  {{previous_date}}: strftime(g:vimsidian_daily_note_date_format, now - aday)
-  {{next_date}}: strftime(g:vimsidian_daily_note_date_format, now + aday)
-  {{day_of_week}}: strftime("%A", now)
-
-
-------------------------------------------------------------------------------
                                 *g:max_number_of_links_to_check_for_broken*
 
   let g:max_number_of_links_to_check_for_broken = 80
@@ -274,7 +235,6 @@ All commands:
   |:VimsidianMoveToPreviousEntryInLinkStack|
   |:VimsidianNewNote|
   |:VimsidianNewNoteInterfactive|
-  |:VimsidianDailyNote|
   |:VimsidianMatchCursorLink|
   |:VimsidianMatchBrokenLinks|
   |:VimsidianFormatLink|
@@ -392,15 +352,6 @@ with the name of the argument
 Creates a new note at the location entered by the user
 
 ------------------------------------------------------------------------------
-                                                      *vimsidian_daily_note*
-
-  |:VimsidianDailyNote|
-
-Create a new daily note based on |g:vimsidian_daily_note_template_path|
-in |g:vimsidian_daily_note_path|. If the note already exists, open it.
-
-
-------------------------------------------------------------------------------
                                               *vimsidian_match_cursor_link*
 
   |:VimsidianMatchCursorLink|
@@ -463,8 +414,6 @@ EXAMPLES                                                *vimsidian-examples*
       nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
     au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
       nn <buffer> sO :VimsidianNewNoteInteractive<CR>
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
-      nn <buffer> sd :VimsidianDailyNote<CR>
     au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
       nn <buffer> sf :VimsidianFormatLink<CR>
     au WinEnter,BufEnter $VIMSIDIAN_PATH_PATTERN /,
