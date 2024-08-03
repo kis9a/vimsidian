@@ -121,12 +121,11 @@ command! -nargs=1 VimsidianNewNote call vimsidian#NewNote(<q-args>)
 command! VimsidianNewNoteInteractive call vimsidian#NewNoteInteractive()
 command! VimsidianMatchCursorLink call vimsidian#MatchCursorLink()
 command! VimsidianMatchBrokenLinks call vimsidian#MatchBrokenLinks()
-command! VimsidianFormatLink call vimsidian#FormatLink()
 
 " will be removed
 command! VimsidianDailyNote call s:dailyNote()
 
-function! s:dailyNote()
+function! s:dailyNote() abort
   if exists('*vimsidian#daily_notes#open')
     call vimsidian#daily_notes#open()
   else

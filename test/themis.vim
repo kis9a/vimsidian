@@ -213,20 +213,7 @@ function! s:suite.link_extension() abort
   call s:assert.equal(vimsidian#unit#LinkExtension('Link.gif'), '')
 endfunction
 
-function! s:suite.format_link_string() abort
-  call s:assert.equal(vimsidian#unit#FormatLinkString('a[[b]]'), 'a [[b]]')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('a,[[b]]'), 'a, [[b]]')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('([[b]]'), '([[b]]')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('[[a]]is'), '[[a]] is')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('[[a]],'), '[[a]],')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('[[a]].'), '[[a]].')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('![[a]]'), '![[a]]')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('    [[a]]'), '    [[a]]')
-  call s:assert.equal(vimsidian#unit#FormatLinkString('b    [[a]]'), 'b [[a]]')
-  call s:assert.equal(vimsidian#unit#FormatLinkString(',               [[a]]'), ', [[a]]')
-endfunction
-
-function! s:suite.format_link_string() abort
+function! s:suite.path_join() abort
   call s:assert.equal(vimsidian#util#PathJoin(['/a/', '//b', '/c']), '/a/b/c')
   call s:assert.equal(vimsidian#util#PathJoin(['a', 'b', 'c']), 'a/b/c')
   call s:assert.equal(vimsidian#util#PathJoin('a', 'b', 'c'), 'a/b/c')

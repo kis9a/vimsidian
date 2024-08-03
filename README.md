@@ -29,7 +29,6 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 - Search for notes and lines matching keywords.
 - Display notes in the quickfix window containing the tag string under the cursor.
 - Default syntax highlighting settings.
-- Custom formatting of link spacing.
 - Manage multiple `g:vimsidian_path` (Obsidian Vault).
 - Stack of link jump history in .
 - Highlighting broken links.
@@ -38,6 +37,7 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 ## Extensions
 
 * [kis9a/vimsidian-daily-notes: Daily note extension for vimsidian](https://github.com/kis9a/vimsidian-daily-notes)
+* [vimsidian-formatting-of-link-spacing-example.md · GitHub](https://gist.github.com/kis9a/a60add3b0043ad10f46cbedb2f4eaab6)
 
 ## Initialization
 
@@ -82,7 +82,6 @@ augroup vimsidian_augroup
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sj :VimsidianMoveToNextLink<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
   au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sO :VimsidianNewNoteInteractive<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> sf :VimsidianFormatLink<CR>
   au WinEnter,BufEnter $VIMSIDIAN_PATH_PATTERN silent! call vimsidian#MatchBrokenLinks()
   au CursorMoved $VIMSIDIAN_PATH_PATTERN silent! call vimsidian#MatchCursorLink()
 augroup END

@@ -350,11 +350,3 @@ function! vimsidian#MoveToNextEntryInLinkStack() abort
   call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, entry['path'])
   call cursor(entry['line'], entry['col'])
 endfunction
-
-function! vimsidian#FormatLink() abort
-  let file = expand('%:p')
-  let s = join(vimsidian#action#ReadFile(file), "\n")
-  let s = vimsidian#unit#FormatLinkString(s)
-  call vimsidian#action#WriteFile(split(s, '\n'), file, 'b')
-  call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, file)
-endfunction

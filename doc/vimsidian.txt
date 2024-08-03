@@ -237,7 +237,6 @@ All commands:
   |:VimsidianNewNoteInterfactive|
   |:VimsidianMatchCursorLink|
   |:VimsidianMatchBrokenLinks|
-  |:VimsidianFormatLink|
 
 ------------------------------------------------------------------------------
                                       *vimsidian_cmd_rg_notes_with_matches*
@@ -366,13 +365,6 @@ Highlight the note under the cursor, or darken the note if it does not exist.
 Darkens broken links in the note. 
 Adjust |g:max_number_of_links_to_check_for_broken|.
 
-------------------------------------------------------------------------------
-                                                    *vimsidian_format_link*
-
-  |:VimsidianFormatLink|
-
-Format vimsidian link string for the current file
-
 
 ==============================================================================
 EXAMPLES                                                *vimsidian-examples*
@@ -414,8 +406,6 @@ EXAMPLES                                                *vimsidian-examples*
       nn <buffer> sN :call <SID>vimsidianNewNoteAtNotesDirectory()<CR>
     au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
       nn <buffer> sO :VimsidianNewNoteInteractive<CR>
-    au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN /,
-      nn <buffer> sf :VimsidianFormatLink<CR>
     au WinEnter,BufEnter $VIMSIDIAN_PATH_PATTERN /,
       silent! call vimsidian#MatchBrokenLinks()
     au CursorMoved $VIMSIDIAN_PATH_PATTERN /,
