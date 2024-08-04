@@ -30,13 +30,13 @@ For me, [vimsidian](https://github.com/kis9a/vimsidian) is the plugin that solve
 - Display notes in the quickfix window containing the tag string under the cursor.
 - Default syntax highlighting settings.
 - Manage multiple `g:vimsidian_path` (Obsidian Vault).
-- Stack of link jump history in .
 - Highlighting broken links.
 - Fewer dependencies.
 
 ## Extensions
 
 * [kis9a/vimsidian-daily-notes: Daily note extension for vimsidian](https://github.com/kis9a/vimsidian-daily-notes)
+* [kis9a/vimsidian-link-stack: Keep a link stack of jumping history in each window](https://github.com/kis9a/vimsidian-link-stack) 
 * [vimsidian-formatting-of-link-spacing-example.md · GitHub](https://gist.github.com/kis9a/a60add3b0043ad10f46cbedb2f4eaab6)
 
 ## Initialization
@@ -115,33 +115,6 @@ endfunction
 augroup vimsidian_augroup
   au!
   au VimEnter,BufNewFile,BufReadPost,WinEnter,BufEnter *.md call s:vimsidianSwitchVault()
-" ry ...
-```
-
-</details>
-<!--}}}-->
-
-<!--{{{Use link stack -->
-
-<details open>
-<summary>Use link stack</summary>
-
-Keep a stack of link jump history in each window (w:vimsidian_link_stack)  
-Provides jump and jumpback functionality to entries in the link stack.  
-Like CTRL+t/CTRL+] for tags using ctags in vim. (:h tags)
-
-Detials: <https://github.com/kis9a/vimsidian/pull/10>, <https://github.com/kis9a/vimsidian/issues/9>
-
-```vim
-let g:vimsidian_enable_link_stack = 1
-
-" Example mapping like ctags jump
-augroup vimsidian_augroup
-  au!
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <buffer> <C-]> :VimsidianMoveToLink<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> <C-t> :VimsidianMoveToPreviousEntryInLinkStack<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> sn :VimsidianMoveToNextEntryInLinkStack<CR>
-  au BufNewFile,BufReadPost $VIMSIDIAN_PATH_PATTERN nn <silent> ss :VimsidianLinkStack<CR>
 " ry ...
 ```
 
