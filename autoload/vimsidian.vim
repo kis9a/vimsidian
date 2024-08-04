@@ -246,14 +246,13 @@ function! vimsidian#MoveToLink() abort
     call vimsidian#logger#Info('Linked note not found' . vimsidian#util#WrapWithSingleQuote(f . lex))
     return
   else
-    " TODO: provide move to link hook
-    if !exists('g:vimsidian_enable_link_stack') || g:vimsidian_enable_link_stack
+    if g:vimsidian_enable_link_stack
       if exists('*vimsidian#link_stack#command#move_to_link')
-        call vimsidian#link_stack#command#move_to_link()
+        let [line, col] = vimsidian#unit#CursorLinkPosition()
+        call vimsidian#link_stack#command#move_to_link(note, line, col)
       else
-        echo 'vimsidian#link_stack#command#move_to_link funciton not found, show https://github.com/kis9a/vimsidian-link-stack'
+        echo 'vimsidian#link_stack#command#move_to_link funciton not found, see https://github.com/kis9a/vimsidian-link-stack'
       endif
-      call vimsidian#linkStack#MoveToLink(note)
     else
       call vimsidian#action#OpenFile(g:vimsidian_link_open_mode, note)
     endif
