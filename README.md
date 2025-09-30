@@ -149,4 +149,4 @@ make test
 
 ## LICENSE
 
-[WTFPL license - Do What The F\*ck You Want To Public License](./LICENSE.md)
+[WTFPL license - Do What The F\*ck You Want To Public License](./LICENSE)
